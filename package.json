@@ -1,0 +1,15 @@
+{
+  "name": "ja-fetch",
+  "version": "1.0.0",
+  "description": "fetch packaging",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "fetch",
+    "axios"
+  ],
+  "author": "JA+",
+  "license": "MIT"
+}
