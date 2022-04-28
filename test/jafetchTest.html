@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+
+</body>
+<script type="module">
+    /* -------basic request---------------*/
+  //   import jafetch from "../lib/index.js";
+  //   const body = document.body;
+  //   jafetch
+  // .get("http://localhost:8080/getTestData", {
+  //       params: { type: "aa", data: "ddd" },
+  //       mode: "cors",
+  //       // credentials: 'include',
+  //       // responseType: 'text'
+  //     })
+  // .then((res) => {
+  //       console.log(res, "get: ok");
+  //       body.innerText += "GET: ok," + JSON.stringify(res) + "\n";
+  // });
+
+  //   jafetch
+  // .post("http://localhost:8080/postTestData", {
+  //       params: { id: "11" },
+  //       body: { type: "json" },
+  //       mode: "cors",
+  //     })
+  // .then((res) => {
+  //       console.log(res, "post jons: ok");
+  //       body.innerText += "POST json: ok," + JSON.stringify(res) + "\n";
+  // });
+
+  //   let formData = new FormData();
+  //   formData.append("type", "formData");
+
+  //   jafetch
+  // .post("http://localhost:8080/postTestData", {
+  //       params: { id: "11" },
+  //       body: formData,
+  //       mode: "cors",
+  //     })
+  // .then((res) => {
+  //       console.log(res, "post form data: ok");
+  //       body.innerText += "POST form data: ok," + JSON.stringify(res) + "\n";
+  // });
+
+  //   jafetch
+  // .put("http://localhost:8080/putTestData", {
+  //       params: { id: "pp" },
+  //       body: { type: "put" },
+  //       mode: "cors",
+  //     })
+  // .then((res) => {
+  //       console.log(res, "put json: ok");
+  //       body.innerText += "PUT json: ok," + JSON.stringify(res) + "\n";
+  // });
+
+  //   jafetch
+  // .del("http://localhost:8080/delTestData", {
+  //       params: { id: "del" },
+  //       body: { type: "delete" },
+  //       mode: "cors",
+  //     })
+  // .then((res) => {
+  //       console.log(res, "delete : ok");
+  //       body.innerText += "DELETE : ok," + JSON.stringify(res) + "\n";
+  // });
+</script>
+<script type="module">
+  /* ------------interceptors-----------------*/
+  // import jafetch from "../lib/index.js";
+  // const Service = jafetch.create({
+  //   mode: "cors",
+  //   // credentials: 'include' // cookie
+  // });
+
+  // Service.interceptors.request.use(
+  //   (url, config) => {
+  //     config.headers.userToken = "11111";
+  //     return config;
+  //   },
+  //   (err) => {
+  //     console.log("request interceptor err:", err);
+  //     return Promise.reject(err);
+  //   }
+  // );
+
+  // Service.interceptors.response.use(
+  //   (data, conf) => {
+  //     if (data.code === 1) {
+  //       console.log(data, conf, "response interceptor: ok");
+  //       document.body.innerText +=
+  //         "response interceptor: ok," + JSON.stringify(data) + "\n";
+  //       return data;
+  //     } else {
+  //       return Promise.reject("response.data.code is " + data.code);
+  //     }
+  //   },
+  //   (err) => {
+  //     console.log("response interceptor err:", err);
+  //     return Promise.reject(err);
+  //   }
+  // );
+
+  // Service.get('http://localhost:8080/getTestData', {
+  //   params: { type: 'aa' },
+  //   mode: 'cors',
+  //   // credentials: 'include',
+  //   // responseType: 'text'
+  // }).then(res => {
+  //   console.log(res, 'interceptor get: ok');
+  //   document.body.innerText += 'interceptor GET: ok,' + JSON.stringify(res) + '\n';
+  // }).catch(err => {
+  //   console.error('interceptor get: fail', err);
+  //   document.body.innerText += 'interceptor GET: fail,' + JSON.stringify(err) + '\n';
+  // });
+  // /**remove interceptor*/
+  // // Service.interceptors.response.remove();
+
+  // // Service.interceptors.response.use((data, conf, response) => {
+  // //   console.log('interceptor:', conf, response);
+  // //   if (data.code === 0) {
+  // //     console.log(data, 'interceptor: ok');
+  // //     document.body.innerText += 'interceptor: ok,' + JSON.stringify(data) + '\n';
+  // //     return data;
+  // //   } else {
+  // //     return Promise.reject('response.data.code is ' + data.code);
+  // //   }
+  // // }, (err, conf) => {
+  // //   console.log('onRejectedInterceptor', err, conf);
+  // //   return Promise.reject(err);
+  // // });
+  // Service.post('http://localhost:8080/postTestData', {
+  //   params: { type: 'post param' },
+  //   headers: {
+  //     // 'Content-Type': 'text/plain',
+  //   },
+  //   body: { type: 'post' },
+  //   mode: 'cors',
+  //   // credentials: 'include',
+  //   // responseType: 'text'
+  // }).then(res => {
+  //   console.log(res, 'interceptor post: ok');
+  //   document.body.innerText += ' interceptor POST: ok,' + JSON.stringify(res) + '\n';
+  // }).catch(err => {
+  //   console.error('interceptor post: fail', err);
+  //   document.body.innerText += 'interceptor POST: fail,' + JSON.stringify(err) + '\n';
+  // });
+
+  // Service.get('http://localhost:8080/timeoutTestData', {
+  //   params: {
+  //     timeout: 2000
+  //   }
+  // }).then(res => {
+  //   console.log('res', res);
+  // }).catch(err => {
+  //   console.log(err);
+  // });
+</script>
+
+<!-- <script type="module">
+    /* test abortController*/
+    import jafetch from '../lib/index.js';
+    const fetchBtn = document.querySelector('#fetch');
+    const abortBtn = document.querySelector('#abort');
+    let controller;
+    let signal;
+    fetchBtn.addEventListener('click', () => {
+        if (controller){
+            controller.abort();
+            console.log('取消上次请求');
+        }
+        console.log('发起fetch 请求... 4s后返回结果');
+        controller = new AbortController();
+        signal = controller.signal;
+        // console.log('AbortController.signal',  signal);
+        jafetch.get('http://localhost:8080/timeoutTestData', { params: { timeout: 4000 }, signal }).then(response => {
+            console.log('fetch response :>> ', response);
+        }).catch(err => {
+            console.warn('fetch请求已被取消', err);
+        });
+    });
+    abortBtn.addEventListener('click', () => {
+        if (!controller) console.log('请先发起请求');
+        console.log('使用AbortController 取消请求');
+        controller.abort();
+    });
+</script> -->
+
+
+<script type="module">
+  /* test interceptor abortController*/
+  // import jafetch from "../lib/index.js";
+  // import h from "./h.js";
+  // let ServiceAB = jafetch.create();
+  // let cacheArr = [];
+  // ServiceAB.interceptors.request.use((url, config) => {
+  //   cacheArr.forEach((item) => {
+  //     if (item.url === url) {
+  //       item.controller.abort();
+  //       item.canceled = true;
+  //     }
+  //   });
+  //   let abController = new AbortController();
+  //   config.signal = abController.signal;
+  //   cacheArr.push({
+  //     url,
+  //     controller: abController,
+  //     cancel: false,
+  //   });
+  // });
+  // ServiceAB.interceptors.response.use((url, config) => {
+  //   cacheArr = cacheArr.filter((item) => !item.canceled); // 仅保留未清除的,对象回收
+  // });
+  // const fetchBtn = h("button", "fetch");
+  // const abortBtn = h("button", "AnortController");
+  // document.body.append(fetchBtn, abortBtn);
+  // fetchBtn.addEventListener("click", () => {
+  //   console.log("发起fetch 请求... 4s后返回结果");
+  //   ServiceAB.get("http://localhost:8080/timeoutTestData", {
+  //     params: { timeout: 4000 },
+  //   })
+  //     .then((response) => {
+  //       console.log("fetch response :>> ", response);
+  //     })
+  //     .catch((err) => {
+  //       console.warn("fetch请求已被取消", err);
+  //     });
+  // });
+  // abortBtn.addEventListener("click", () => {
+  //   console.log("使用AbortController 取消所有请求");
+  //   cacheArr.forEach((item) => {
+  //     item.controller.abort();
+  //   });
+  // });
+</script>
+
+</html>
