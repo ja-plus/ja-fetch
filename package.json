@@ -1,15 +1,18 @@
 {
   "name": "ja-fetch",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "fetch packaging",
-  "main": "index.js",
+  "main": "./lib/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+      "bd": "rollup -c"
   },
   "keywords": [
     "fetch",
     "axios"
   ],
   "author": "JA+",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "rollup": "^2.70.2"
+  }
 }
