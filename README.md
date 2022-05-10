@@ -1,6 +1,7 @@
 # ja-fetch
-## use
-### basic
+A fetch wrapper 
+## Usage Demo
+### Basic usage
 ```javascript
 import jafetch from "ja-fetch";
 // get
@@ -9,6 +10,7 @@ jafetch.get(url, {
     mode: "cors",
     // credentials: 'include',
     // responseType: 'text'
+    // responseType: 'response' // return raw fetch Response Object
 })
 // post
 jafetch.post(url, {
@@ -38,14 +40,15 @@ jafetch.del(url, {
     mode: "cors",
 })
 ```
-### interceptor
+### Interceptor demo
 ```javascript
-import jafetch from "../js/utils/jafetch.js";
+import jafetch from "ja-fetch";
 const Service = jafetch.create({
     mode: "cors",
     // credentials: 'include' // cookie
+    // responseType: 'text'
 });
-
+// request
 Service.interceptors.request.use(
     (url, config) => {
         config.headers.userToken = "11111";
@@ -56,7 +59,7 @@ Service.interceptors.request.use(
         return Promise.reject(err);
     }
 );
-
+// response
 Service.interceptors.response.use(
     (data, conf) => {
         if (data.code === 1) {
@@ -71,4 +74,55 @@ Service.interceptors.response.use(
         return Promise.reject(err);
     }
 );
+```
+### Cancel Request Demo
+Use [AbortController(MDN)](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController) to cancel request
+#### Basic
+```javascript 
+import jafetch from 'ja-fetch';
+const fetchBtn = document.querySelector('#fetch'); // <button></button>
+let controller; // save request abortController
+
+fetchBtn.addEventListener('click', () => {
+    if (controller) controller.abort(); // abort a request
+
+    controller = new AbortController();
+    jafetch.get('http://localhost:8080/timeoutTestData', { 
+        params: { timeout: 4000 }, 
+        signal: controller.signal
+    }).then(data => {
+        console.log('data', data)
+    }).catch(err => {
+        console.warn('fetch canceled', err);
+    }).finally(() => {
+      controller = null
+    });
+});
+
+
+```
+#### In interceptors
+```javascript
+  import jafetch from "ja-fetch";
+  let Service = jafetch.create();
+  let cacheArr = [];
+  Service.interceptors.request.use((url, config) => {
+    cacheArr.forEach((item) => {
+      // abort same url
+      if (item.url === url) {
+        item.controller.abort();
+        item.canceled = true;
+      }
+    });
+    let abController = new AbortController();
+    config.signal = abController.signal;
+    cacheArr.push({
+      url,
+      controller: abController,
+      cancel: false,
+    });
+  });
+  Service.interceptors.response.use((url, config) => {
+    cacheArr = cacheArr.filter((item) => !item.canceled); // clean canceled cache
+  });
 ```

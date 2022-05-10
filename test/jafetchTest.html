@@ -12,7 +12,7 @@
 
 </body>
 <script type="module">
-    /* -------basic request---------------*/
+  /* -------basic request---------------*/
   //   import jafetch from "../lib/index.js";
   //   const body = document.body;
   //   jafetch
@@ -167,32 +167,40 @@
 </script>
 
 <!-- <script type="module">
-    /* test abortController*/
-    import jafetch from '../lib/index.js';
-    const fetchBtn = document.querySelector('#fetch');
-    const abortBtn = document.querySelector('#abort');
-    let controller;
-    let signal;
-    fetchBtn.addEventListener('click', () => {
-        if (controller){
-            controller.abort();
-            console.log('取消上次请求');
-        }
-        console.log('发起fetch 请求... 4s后返回结果');
-        controller = new AbortController();
-        signal = controller.signal;
-        // console.log('AbortController.signal',  signal);
-        jafetch.get('http://localhost:8080/timeoutTestData', { params: { timeout: 4000 }, signal }).then(response => {
-            console.log('fetch response :>> ', response);
-        }).catch(err => {
-            console.warn('fetch请求已被取消', err);
-        });
+  /* test abortController*/
+  import jafetch from '../lib/index.js';
+  import h from "./h.js";
+  const fetchBtn = h("button", "fetch");
+  const abortBtn = h("button", "AbortController");
+  document.body.append(fetchBtn, abortBtn);
+  let controller;
+  fetchBtn.addEventListener('click', () => {
+    if (controller) {
+      controller.abort();
+      console.log('取消上次请求');
+    }
+    console.log('发起fetch 请求... 4s后返回结果');
+    controller = new AbortController();
+    // console.log('AbortController.signal',  signal);
+    jafetch.get('http://localhost:8080/timeoutTestData', {
+      params: { timeout: 4000 },
+      signal: controller.signal
+    }).then(response => {
+      console.log('fetch response :>> ', response);
+    }).catch(err => {
+      console.warn('fetch请求已被取消', err);
+    }).finally(() => {
+      controller = null
     });
-    abortBtn.addEventListener('click', () => {
-        if (!controller) console.log('请先发起请求');
-        console.log('使用AbortController 取消请求');
-        controller.abort();
-    });
+  });
+  abortBtn.addEventListener('click', () => {
+    if (!controller) {
+      console.warn('请先发起请求');
+      return;
+    }
+    console.log('使用AbortController 取消请求');
+    controller.abort();
+  });
 </script> -->
 
 
