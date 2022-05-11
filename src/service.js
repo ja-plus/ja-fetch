@@ -1,5 +1,5 @@
-import coreFetch from './coreFetch'
-import Interceptors from './interceptors'
+import coreFetch from './coreFetch.js'
+import Interceptors from './interceptors.js'
 
 export default class Service {
   defaultConf = {
@@ -23,10 +23,20 @@ export default class Service {
     let assignedConf = Object.assign({}, this.defaultConf, config)
 
     // 请求拦截器
-    if (reqInterceptor.onFulfilled) {
+    // if (reqInterceptor.onFulfilled) {
+    //   if (!assignedConf.headers) assignedConf.headers = {} // 没有headers就给一个空对象，便于拦截器中config.headers.xxx来使用
+    //   let returnConf = reqInterceptor.onFulfilled(url, assignedConf) // 请求拦截器中修改请求配置
+    //   if (returnConf) assignedConf = returnConf // 考虑使用拦截器的的时候直接修改形参option.来修改配置对象，且不返回的情况
+    // }
+
+    // 请求拦截器 multi
+    if (reqInterceptor.store.length) {
       if (!assignedConf.headers) assignedConf.headers = {} // 没有headers就给一个空对象，便于拦截器中config.headers.xxx来使用
-      let returnConf = reqInterceptor.onFulfilled(url, assignedConf) // 请求拦截器中修改请求配置
-      if (returnConf) assignedConf = returnConf // 考虑使用拦截器的的时候直接修改形参option.来修改配置对象，且不返回的情况
+      reqInterceptor.store.forEach(item => {
+        // TODO: async await
+        let returnConf = item.onFulfilled(url, assignedConf) // 请求拦截器中修改请求配置
+        if (returnConf) assignedConf = returnConf // 考虑使用拦截器的的时候直接修改形参option.来修改配置对象，且不返回的情况
+      })
     }
 
     const fetchPromise = coreFetch(url, assignedConf)
@@ -55,21 +65,34 @@ export default class Service {
         }
       })
       .catch(err => {
+        const errObj = { err, config: assignedConf }
         // 错误交给拦截器处理
         if (err.response?.ok) {
-          // 响应错误
-          return resInterceptor.onRejected
-            ? resInterceptor.onRejected({ err, config: assignedConf })
-            : Promise.reject({ err, config: assignedConf })
+          // -------------响应错误
+          return resInterceptor.onRejected ? resInterceptor.onRejected(errObj) : Promise.reject(errObj)
         } else {
-          // 请求错误,(浏览器阻止请求)
-          return reqInterceptor.onRejected
-            ? reqInterceptor.onRejected({ err, config: assignedConf })
-            : Promise.reject({ err, config: assignedConf })
+          // -------------请求错误,(浏览器阻止请求)
+          // 构建catch链
+          let reqInterceptorRejectPromise = Promise.reject()
+          reqInterceptor.store.forEach(item => {
+            reqInterceptorRejectPromise = reqInterceptorRejectPromise.catch(() => {
+              let rejectedFuncReturn = item.onRejected(errObj)
+              // 校验onRejected 的返回值，希望onRejected 函数必须返回一个Promise
+              if (rejectedFuncReturn instanceof Promise) {
+                return rejectedFuncReturn
+              } else {
+                console.warn(
+                  "request.interceptor.use(onFulfilled, onRejected): onRejected function not return Promise. Use Promise.reject() to jump to next request interceptor's onRejected Function",
+                )
+              }
+            })
+          })
+          return reqInterceptor.store.length ? reqInterceptorRejectPromise : Promise.reject(errObj)
         }
       })
     return fetchPromise
   }
+
   get(url, config = {}) {
     config.method = 'GET'
     return this.#requestAdapter(url, config)

@@ -4,8 +4,8 @@
  * 取消请求可使用abortController()
  ***********/
 
-import coreFetch from './coreFetch'
-import Service from './service'
+import coreFetch from './coreFetch.js'
+import Service from './service.js'
 
 /**
  *

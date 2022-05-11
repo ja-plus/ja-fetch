@@ -8,14 +8,14 @@ class Interceptor {
   /**
    *
    * @param {Function} onFulfilled
-   * @param {Function} onRejected
+   * @param {(url:string,config:object) => Promise} onRejected
    * @returns {number}
    */
   use(onFulfilled, onRejected) {
-    if (typeof onFulfilled !== 'function') {
+    if (onFulfilled && typeof onFulfilled !== 'function') {
       throw new TypeError('interceptor.use(onFulfilled, onRejected), parameter onFulfilled is not a function')
     }
-    if (typeof onRejected !== 'function') {
+    if (onRejected && typeof onRejected !== 'function') {
       throw new TypeError('interceptor.use(onFulfilled, onRejected), parameter onRejected is not a function')
     }
     this.onFulfilled = onFulfilled
@@ -49,6 +49,7 @@ export default class Interceptors {
    * @param {function(Constructor<Interceptors>):Interceptors} pluginEntryFunc
    */
   plugin(pluginEntryFunc) {
+    // TODO:
     const interceptors = pluginEntryFunc(Interceptors)
     // this.request.use(interceptors.request.onFulfilled, interceptors.request.onRejected);
     // this.response.use(interceptors.response.onFulfilled, interceptors.response.onRejected);

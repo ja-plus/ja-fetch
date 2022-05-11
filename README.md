@@ -76,7 +76,7 @@ Service.interceptors.response.use(
 );
 ```
 ### Cancel Request Demo
-Use [AbortController(MDN)](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController) to cancel request
+Use [AbortController(MDN)](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController) to cancel request  (`Chrome >= 66`)
 #### Basic
 ```javascript 
 import jafetch from 'ja-fetch';

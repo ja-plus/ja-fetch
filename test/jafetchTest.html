@@ -250,5 +250,54 @@
   //   });
   // });
 </script>
+<script type="module">
+  // multi interceptors
+  import jafetch from '../src/index.js'
+  const Service = jafetch.create()
+  Service.interceptors.request.use(
+    (url, config) => {
+      config.headers.HAHAHA = '1'
+      return config
+    },
+    err => {
+      console.log('request interceptor err1', err)
+      // return Promise.resolve() // will not jump to next interceptors.request onRejected func
+      return Promise.reject() // will jump to next
+    },
+  )
+
+  Service.interceptors.request.use(
+    (url, config) => {
+      config.headers.HAHAAH2 = '2'
+      return config
+    },
+    err => {
+      console.log('request interceptor err2', err)
+      return Promise.reject() // will jump to jafetch.xxx().catch()
+      // return Promise.resolve() // will jump to jafetch.xxx().then()
+    },
+  )
+
+  // TODO:
+  Service.interceptors.response.use(
+    data => {
+      return data
+    },
+    () => {},
+  )
+
+  Service.get('http://localhost:8080/getTestData', {
+    params: { type: 'aa' },
+    // mode: 'cors',
+  })
+    .then(res => {
+      console.log(res, 'interceptor get: ok')
+      document.body.innerText += 'interceptor GET: ok,' + JSON.stringify(res) + '\n'
+    })
+    .catch(err => {
+      console.error('interceptor get: fail', err)
+      document.body.innerText += 'interceptor GET: fail,' + JSON.stringify(err) + '\n'
+    })
+</script>
 
 </html>

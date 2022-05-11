@@ -1,4 +1,4 @@
-import { createUrlParamStr } from './utils'
+import { createUrlParamStr } from './utils.js'
 
 /**
  * @param {string} url url
