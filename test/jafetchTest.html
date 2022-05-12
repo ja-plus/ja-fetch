@@ -281,12 +281,29 @@
   // TODO:
   Service.interceptors.response.use(
     data => {
+      console.log('response interceptor1 data:', data)
+      data.addKey1 = 2
       return data
     },
-    () => {},
+    err => {
+      console.log('response interceptor1 err:', err)
+      return Promise.reject(err)
+    },
   )
 
-  Service.get('http://localhost:8080/getTestData', {
+  Service.interceptors.response.use(
+    data => {
+      console.log('response interceptor2 data:', data)
+      data.addKey2 = 2
+      return data
+    },
+    err => {
+      console.log('response interceptor2 err:', err)
+      return Promise.reject(err)
+    },
+  )
+
+  Service.get('http://localhost:8081/getTestData1', {
     params: { type: 'aa' },
     // mode: 'cors',
   })
@@ -298,6 +315,24 @@
       console.error('interceptor get: fail', err)
       document.body.innerText += 'interceptor GET: fail,' + JSON.stringify(err) + '\n'
     })
+
+  // Promise.resolve()
+  //   .then(
+  //     () => {
+  //       return Promise.reject()
+  //     },
+  //     () => {
+  //       console.log('aaa')
+  //     },
+  //   )
+  //   .then(
+  //     () => {
+  //       console.log('22')
+  //     },
+  //     () => {
+  //       console.log('err2')
+  //     },
+  //   )
 </script>
 
 </html>
