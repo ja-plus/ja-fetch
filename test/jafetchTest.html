@@ -34,7 +34,7 @@
   //       mode: "cors",
   //     })
   // .then((res) => {
-  //       console.log(res, "post jons: ok");
+  //       console.log(res, "post json: ok");
   //       body.innerText += "POST json: ok," + JSON.stringify(res) + "\n";
   // });
 
@@ -229,7 +229,7 @@
   //   cacheArr = cacheArr.filter((item) => !item.canceled); // 仅保留未清除的,对象回收
   // });
   // const fetchBtn = h("button", "fetch");
-  // const abortBtn = h("button", "AnortController");
+  // const abortBtn = h("button", "AbortController");
   // document.body.append(fetchBtn, abortBtn);
   // fetchBtn.addEventListener("click", () => {
   //   console.log("发起fetch 请求... 4s后返回结果");
@@ -262,7 +262,7 @@
     err => {
       console.log('request interceptor err1', err)
       // return Promise.resolve() // will not jump to next interceptors.request onRejected func
-      return Promise.reject() // will jump to next
+      // return Promise.reject() // will jump to next
     },
   )
 
@@ -273,7 +273,7 @@
     },
     err => {
       console.log('request interceptor err2', err)
-      return Promise.reject() // will jump to jafetch.xxx().catch()
+      // return Promise.reject() // will jump to jafetch.xxx().catch()
       // return Promise.resolve() // will jump to jafetch.xxx().then()
     },
   )
@@ -287,7 +287,7 @@
     },
     err => {
       console.log('response interceptor1 err:', err)
-      return Promise.reject(err)
+      // return Promise.reject(err)
     },
   )
 
@@ -299,7 +299,8 @@
     },
     err => {
       console.log('response interceptor2 err:', err)
-      return Promise.reject(err)
+      // return Promise.reject(err)
+      // return Promise.reject('1')
     },
   )
 
@@ -312,8 +313,8 @@
       document.body.innerText += 'interceptor GET: ok,' + JSON.stringify(res) + '\n'
     })
     .catch(err => {
-      console.error('interceptor get: fail', err)
-      document.body.innerText += 'interceptor GET: fail,' + JSON.stringify(err) + '\n'
+      console.error('interceptor get: err', err)
+      document.body.innerText += 'interceptor GET: err,' + JSON.stringify(err) + '\n'
     })
 
   // Promise.resolve()

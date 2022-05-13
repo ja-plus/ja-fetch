@@ -12,6 +12,10 @@ export default class Service {
   constructor(defaultConf) {
     this.defaultConf = Object.assign({}, this.defaultConf, defaultConf)
   }
+  /** create a new service */
+  create(config) {
+    return new Service(config)
+  }
   /**
    *
    * @param {string} url
@@ -38,6 +42,31 @@ export default class Service {
         if (returnConf) assignedConf = returnConf // 考虑使用拦截器的的时候直接修改形参option.来修改配置对象，且不返回的情况
       })
     }
+
+    // new Promise((resolve, reject) => {
+    //   coreFetch(url, assignedConf)
+    //     .catch(() => {
+    //       // request Interceptor err
+    //       // reqOnReject().catch(2).catch(() => reject())
+    //     })
+    //     .then(response => {
+    //       if (response.ok) {
+    //         let prom = response
+    //           .json()
+    //           .then(data => {
+    //             // responseType adapter
+    //           })
+    //           // loop prom.catch(1).then(1).catch(2).then(2)
+
+    //           .catch(() => {
+    //             reject()
+    //           })
+    //       } else {
+    //         // response err interceptor err
+    //         // resOnReject().catch(2).catch(() => reject())
+    //       }
+    //     })
+    // })
 
     const fetchPromise = coreFetch(url, assignedConf)
       .catch(err => {
@@ -94,11 +123,15 @@ export default class Service {
           // })
           const errObj = { msg: `res status:${response.status}`, config: assignedConf }
           // 错误交给拦截器处理
-          let resInterceptorRejectPromise = Promise.reject(errObj)
+          let resInterceptorRejectPromise = null
           resInterceptor.store.forEach(item => {
-            resInterceptorRejectPromise = resInterceptorRejectPromise.catch(err => {
-              return item.onRejected(err)
-            })
+            if (!resInterceptorRejectPromise) {
+              resInterceptorRejectPromise = Promise.resolve().then(() => item.onRejected(errObj))
+            } else {
+              resInterceptorRejectPromise = resInterceptorRejectPromise.catch(err => {
+                return item.onRejected(err)
+              })
+            }
           })
           return resInterceptorRejectPromise
         }
