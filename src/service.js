@@ -26,13 +26,6 @@ export default class Service {
     const resInterceptor = this.interceptors.response // 响应拦截器
     let assignedConf = Object.assign({}, this.defaultConf, config)
 
-    // 请求拦截器
-    // if (reqInterceptor.onFulfilled) {
-    //   if (!assignedConf.headers) assignedConf.headers = {} // 没有headers就给一个空对象，便于拦截器中config.headers.xxx来使用
-    //   let returnConf = reqInterceptor.onFulfilled(url, assignedConf) // 请求拦截器中修改请求配置
-    //   if (returnConf) assignedConf = returnConf // 考虑使用拦截器的的时候直接修改形参option.来修改配置对象，且不返回的情况
-    // }
-
     // 请求拦截器 multi
     if (reqInterceptor.store.length) {
       if (!assignedConf.headers) assignedConf.headers = {} // 没有headers就给一个空对象，便于拦截器中config.headers.xxx来使用
@@ -43,53 +36,9 @@ export default class Service {
       })
     }
 
-    // new Promise((resolve, reject) => {
-    //   coreFetch(url, assignedConf)
-    //     .catch(() => {
-    //       // request Interceptor err
-    //       // reqOnReject().catch(2).catch(() => reject())
-    //     })
-    //     .then(response => {
-    //       if (response.ok) {
-    //         let prom = response
-    //           .json()
-    //           .then(data => {
-    //             // responseType adapter
-    //           })
-    //           // loop prom.catch(1).then(1).catch(2).then(2)
-
-    //           .catch(() => {
-    //             reject()
-    //           })
-    //       } else {
-    //         // response err interceptor err
-    //         // resOnReject().catch(2).catch(() => reject())
-    //       }
-    //     })
-    // })
-
-    const fetchPromise = coreFetch(url, assignedConf)
-      .catch(err => {
-        // -------------请求错误,(浏览器阻止请求)
-        const errObj = { err, config: assignedConf }
-        // 构建catch链
-        let reqInterceptorRejectPromise = Promise.reject(errObj)
-        reqInterceptor.store.forEach(item => {
-          reqInterceptorRejectPromise = reqInterceptorRejectPromise.catch(err => {
-            let rejectedFuncReturn = item.onRejected(err)
-            // 校验onRejected 的返回值，希望onRejected 函数必须返回一个Promise
-            if (rejectedFuncReturn instanceof Promise) {
-              return rejectedFuncReturn
-            } else {
-              console.warn(
-                "request.interceptor.use(onFulfilled, onRejected): onRejected function not return Promise. Use Promise.reject() to jump to next request interceptor's onRejected Function",
-              )
-            }
-          })
-        })
-        return reqInterceptorRejectPromise
-      })
-      .then(response => {
+    // return new Promise((resolve, reject) => {
+    return coreFetch(url, assignedConf).then(
+      response => {
         if (response.ok) {
           const responseType = assignedConf.responseType
           let prom
@@ -100,43 +49,71 @@ export default class Service {
           // response.body
           else prom = response.json()
 
-          // 添加响应拦截器
+          /**
+           * 添加响应拦截器
+           * 第一个拦截器中onFulfilled中的异常由下一个拦截器的onRejected处理
+           */
           resInterceptor.store.forEach(item => {
-            prom = prom.then(data => {
-              // onFulfilled 方法中的异常不会被onRejected方法处理
-              return item.onFulfilled(data, assignedConf, response) // 可能要把response对象传给拦截器使用
-            })
+            prom = prom.then(
+              data => {
+                // onFulfilled 方法中的异常不会被onRejected方法处理
+                return item.onFulfilled(data, assignedConf, response) // 可能要把response对象传给拦截器使用
+              },
+              err => {
+                return item.onRejected ? item.onRejected(err) : Promise.reject(err)
+              },
+            )
           })
+          // prom = prom.then(resolve).catch(reject)
 
           return prom
-          // return prom.then(data => {
-          //   // 添加响应拦截器
-          //   return resInterceptor.onFulfilled
-          //     ? resInterceptor.onFulfilled(data, assignedConf, response) // 可能要把response对象传给拦截器使用
-          //     : data
-          // })
         } else {
           // -------------响应错误
-          // return Promise.reject({
-          //   msg: `res status:${response.status}`,
-          //   response,
-          // })
           const errObj = { msg: `res status:${response.status}`, config: assignedConf }
           // 错误交给拦截器处理
-          let resInterceptorRejectPromise = null
+          let resInterceptorRejectPromise = Promise.reject(errObj)
           resInterceptor.store.forEach(item => {
-            if (!resInterceptorRejectPromise) {
-              resInterceptorRejectPromise = Promise.resolve().then(() => item.onRejected(errObj))
-            } else {
-              resInterceptorRejectPromise = resInterceptorRejectPromise.catch(err => {
-                return item.onRejected(err)
+            resInterceptorRejectPromise = resInterceptorRejectPromise
+              .catch(item.onRejected)
+              .then(rejectedFuncReturn => {
+                // 校验onRejected 的返回值，希望onRejected 函数必须返回一个Promise
+                if (rejectedFuncReturn instanceof Promise) {
+                  return rejectedFuncReturn
+                } else {
+                  console.warn(
+                    "response.interceptor.use(onFulfilled, onRejected): onRejected function not return Promise. Use Promise.reject() to jump to next response interceptor's onRejected Function",
+                  )
+                  // reject()
+                  return Promise.reject(errObj)
+                }
               })
-            }
           })
           return resInterceptorRejectPromise
         }
-      })
-    return fetchPromise
+      },
+      err => {
+        // -------------请求错误,(浏览器阻止请求)
+        const errObj = { err, config: assignedConf }
+        // 构建catch链
+        let reqInterceptorRejectPromise = Promise.reject(errObj)
+        reqInterceptor.store.forEach(item => {
+          reqInterceptorRejectPromise = reqInterceptorRejectPromise.catch(item.onRejected).then(rejectedFuncReturn => {
+            // 校验onRejected 的返回值，希望onRejected 函数必须返回一个Promise
+            if (rejectedFuncReturn instanceof Promise) {
+              return rejectedFuncReturn
+            } else {
+              console.warn(
+                "request.interceptor.use(onFulfilled, onRejected): onRejected function not return Promise. Use Promise.reject() to jump to next request interceptor's onRejected Function",
+              )
+              // reject()
+              return Promise.reject(errObj)
+            }
+          })
+        })
+        return reqInterceptorRejectPromise
+      },
+    )
+    // })
   }
 
   get(url, config = {}) {
