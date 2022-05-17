@@ -328,23 +328,29 @@
       document.body.innerText += 'interceptor GET: err,' + JSON.stringify(err) + '\n'
     })
 
-  // Promise.resolve()
-  //   .then(
-  //     () => {
-  //       return Promise.reject()
-  //     },
-  //     () => {
-  //       console.log('aaa')
-  //     },
-  //   )
-  //   .then(
-  //     () => {
-  //       console.log('22')
-  //     },
-  //     () => {
-  //       console.log('err2')
-  //     },
-  //   )
 </script> -->
+<script type="module">
+  /* test interceptor abortController*/
+  import jafetch from '../src/index.js'
+  import { abortControllerInterceptor } from '../presets/interceptors.js'
+  import h from './h.js'
+  let ServiceAB = jafetch.create()
+  ServiceAB.interceptors.preset(abortControllerInterceptor())
+
+  const fetchBtn = h('button', 'fetch')
+  document.body.append(fetchBtn)
+  fetchBtn.addEventListener('click', () => {
+    console.log('发起fetch 请求... 4s后返回结果')
+    ServiceAB.get('http://localhost:8080/timeoutTestData', {
+      params: { timeout: 4000 },
+    })
+      .then(response => {
+        console.log('fetch response :>> ', response)
+      })
+      .catch(err => {
+        console.warn('fetch请求已被取消', err)
+      })
+  })
+</script>
 
 </html>

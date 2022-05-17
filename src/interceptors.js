@@ -7,7 +7,7 @@ class Interceptor {
   onRejected = null
   /**
    *
-   * @param {Function} onFulfilled
+   * @param {(data:any,config:object,response:Response) => Promise} onFulfilled
    * @param {(url:string,config:object) => Promise} onRejected
    * @returns {number}
    */
@@ -41,18 +41,27 @@ class Interceptor {
     }
   }
 }
+/**
+ * @class
+ * @name module:Interceptors
+ */
 export default class Interceptors {
   request = new Interceptor()
   response = new Interceptor()
   /**
-   *
+   * 拦截器预设
    * @param {function(Constructor<Interceptors>):Interceptors} pluginEntryFunc
    */
-  plugin(pluginEntryFunc) {
-    // TODO:
+  preset(pluginEntryFunc) {
     const interceptors = pluginEntryFunc(Interceptors)
-    // this.request.use(interceptors.request.onFulfilled, interceptors.request.onRejected);
-    // this.response.use(interceptors.response.onFulfilled, interceptors.response.onRejected);
+    if (interceptors instanceof Interceptors) {
+      interceptors.request.store.forEach(item => {
+        this.request.use(item.onFulfilled, item.onRejected)
+      })
+      interceptors.response.store.forEach(item => {
+        this.response.use(item.onFulfilled, item.onRejected)
+      })
+    }
   }
   create() {
     return new Interceptors()
