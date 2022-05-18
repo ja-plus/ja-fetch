@@ -1,11 +1,16 @@
 {
   "name": "ja-fetch",
-  "version": "1.1.0",
-  "description": "fetch-api wrapper",
+  "version": "1.2.0",
+  "description": "3kb fetch-api wrapper",
   "main": "./lib/index.js",
   "scripts": {
     "bd": "rollup -c"
   },
+  "files": [
+    "src",
+    "lib",
+    "preset"
+  ],
   "repository": {
     "type": "git",
     "url": "https://gitee.com/japlus/ja-fetch"
@@ -23,6 +28,7 @@
     "eslint-plugin-html": "^6.2.0",
     "eslint-plugin-prettier": "^4.0.0",
     "prettier": "^2.5.1",
-    "rollup": "^2.70.2"
+    "rollup": "^2.70.2",
+    "rollup-plugin-uglify": "^6.0.4"
   }
 }

@@ -2,7 +2,7 @@ import coreFetch from './coreFetch.js'
 import Interceptors from './interceptors.js'
 
 export default class Service {
-  defaultConf = {
+  #defaultConf = {
     headers: {},
   }
   interceptors = new Interceptors()
@@ -10,7 +10,7 @@ export default class Service {
    * @param {object} defaultConf
    */
   constructor(defaultConf) {
-    this.defaultConf = Object.assign({}, this.defaultConf, defaultConf)
+    this.#defaultConf = Object.assign({}, this.#defaultConf, defaultConf)
   }
   /** create a new service */
   create(config) {
@@ -24,7 +24,7 @@ export default class Service {
   #requestAdapter(url, config) {
     const reqInterceptor = this.interceptors.request // 请求拦截器
     const resInterceptor = this.interceptors.response // 响应拦截器
-    let assignedConf = Object.assign({}, this.defaultConf, config)
+    let assignedConf = Object.assign({}, this.#defaultConf, config)
 
     // 请求拦截器 multi
     if (reqInterceptor.store.length) {

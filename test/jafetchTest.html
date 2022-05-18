@@ -231,7 +231,7 @@
     cacheArr.push({
       url,
       controller: abController,
-      cancel: false,
+      canceled: false,
     })
   })
   ServiceAB.interceptors.response.use((url, config) => {
@@ -332,17 +332,21 @@
 <script type="module">
   /* test interceptor abortController*/
   import jafetch from '../src/index.js'
-  import { abortControllerInterceptor } from '../presets/interceptors.js'
+  import { commonCancelRequest } from '../preset/interceptors.js'
   import h from './h.js'
   let ServiceAB = jafetch.create()
-  ServiceAB.interceptors.preset(abortControllerInterceptor())
+  ServiceAB.interceptors.use(
+    commonCancelRequest((storedRequest, nowRequest) => {
+      return storedRequest.url === nowRequest.url
+    }),
+  )
 
   const fetchBtn = h('button', 'fetch')
   document.body.append(fetchBtn)
   fetchBtn.addEventListener('click', () => {
-    console.log('发起fetch 请求... 4s后返回结果')
+    console.log('发起fetch 请求... 1s后返回结果')
     ServiceAB.get('http://localhost:8080/timeoutTestData', {
-      params: { timeout: 4000 },
+      params: { timeout: 1000 },
     })
       .then(response => {
         console.log('fetch response :>> ', response)

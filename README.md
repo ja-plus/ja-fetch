@@ -126,3 +126,21 @@ fetchBtn.addEventListener('click', () => {
     cacheArr = cacheArr.filter((item) => !item.canceled); // clean canceled cache
   });
 ```
+#### Use Cancel Request Preset (same as previous interceptors demo )
+```javascript
+  import jafetch from 'ja-fetch'
+  import { commonCancelRequest } from 'ja-fetch/preset/interceptors.js'
+  let ServiceAB = jafetch.create()
+  ServiceAB.interceptors.use(commonCancelRequest()) //
+  // or custom cancel rule
+  ServiceAB.interceptors.use(
+    commonCancelRequest((storedRequest, nowRequest) => {
+    /**
+     * @typedef storedRequest
+     * @property {string} url
+     * @property {object} config
+     */
+      return storedRequest.url === nowRequest.url
+    }),
+  )
+```

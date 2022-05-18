@@ -1,10 +1,6 @@
 class Interceptor {
   /** @type {{id:string,onFulfilled:function,onRejected:function}[]} */
   store = []
-  /** @type {Function} */
-  onFulfilled = null
-  /** @type {Function} */
-  onRejected = null
   /**
    *
    * @param {(data:any,config:object,response:Response) => Promise} onFulfilled
@@ -31,8 +27,6 @@ class Interceptor {
    * @param {number} id
    */
   remove(id) {
-    this.onFulfilled = null
-    this.onRejected = null
     if (id) {
       this.store = this.store.filter(it => it.id === id)
     } else {
@@ -41,27 +35,24 @@ class Interceptor {
     }
   }
 }
-/**
- * @class
- * @name module:Interceptors
- */
 export default class Interceptors {
   request = new Interceptor()
   response = new Interceptor()
   /**
    * 拦截器预设
-   * @param {function(Constructor<Interceptors>):Interceptors} pluginEntryFunc
+   * @param {{install(interceptors:Interceptors)}} obj
    */
-  preset(pluginEntryFunc) {
-    const interceptors = pluginEntryFunc(Interceptors)
-    if (interceptors instanceof Interceptors) {
-      interceptors.request.store.forEach(item => {
-        this.request.use(item.onFulfilled, item.onRejected)
-      })
-      interceptors.response.store.forEach(item => {
-        this.response.use(item.onFulfilled, item.onRejected)
-      })
-    }
+  use(obj) {
+    const interceptors = new Interceptors()
+    obj.install(interceptors)
+
+    interceptors.request.store.forEach(item => {
+      this.request.use(item.onFulfilled, item.onRejected)
+    })
+    interceptors.response.store.forEach(item => {
+      this.response.use(item.onFulfilled, item.onRejected)
+    })
+    // release interceptors?
   }
   create() {
     return new Interceptors()
