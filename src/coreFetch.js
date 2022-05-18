@@ -1,11 +1,12 @@
 import { createUrlParamStr } from './utils.js'
 
 /**
- * @param {string} url url
+ * @param {string | Request} url url
  * @param {object} config fetch init obj
  * @returns {Promise<Response>}
  */
 export default function coreFetch(url, config) {
+  // TODO: 判断url类型
   const params = config.params
   // 拼url参数
   if (params) url = createUrlParamStr(url, params)

@@ -1,5 +1,22 @@
 # ja-fetch
-A fetch wrapper 
+A simple fetch wrapper (uglify:**3kb**)
+* Optimize fetch: get transfer parameters
+* Optimize fetch: Auto JSON.stringify post body
+* default return `response.json()` (Set `responseType` to change)
+* support interceptor
+* support cancel request interceptor preset
+
+config extends [Fetch API(MDN)](https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API/Using_Fetch)
+
+## API
+```javascript
+jafetch.get(url, config)
+let service = jafetch.create(config)
+service.interceptors.request.use(onFulfilled,onRejected)
+service.interceptors.response.use(onFulfilled,onRejected)
+service.interceptors.use(preset)
+service.get(url,config)
+```
 ## Usage Demo
 ### Basic usage
 ```javascript
@@ -14,7 +31,7 @@ jafetch.get(url, {
 })
 // post
 jafetch.post(url, {
-    params: { id: "11" },
+    params: { id: "11" }, // Concatenated after the URL
     body: { type: "json" },
     mode: "cors",
 })
