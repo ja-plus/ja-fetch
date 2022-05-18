@@ -7,16 +7,19 @@
  * @property {object} config
  * @property {AbortController} [_controller] private param
  */
+/**
+ * @callback AbortFilter
+ * @param {FilterParam} storedRequest
+ * @param {FilterParam} nowRequest
+ * @returns {boolean}
+ */
 
 /**
- * @param {(storedRequest:FilterParam, nowRequest:FilterParam) => boolean} [abortFilter] default: url === url
- * @return
+ * @param {AbortFilter} [abortFilter] default: url === url
+ * @return {{install(interceptors:Interceptors):void}}
  */
 export function commonCancelRequest(abortFilter) {
   return {
-    /**
-     * @param {Interceptors} interceptors instance
-     */
     install(interceptors) {
       /** @type {FilterParam[]} */
       let cacheArr = []

@@ -27,6 +27,7 @@
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-html": "^6.2.0",
     "eslint-plugin-prettier": "^4.0.0",
+    "jsdoc": "^3.6.10",
     "prettier": "^2.5.1",
     "rollup": "^2.70.2",
     "rollup-plugin-uglify": "^6.0.4"
