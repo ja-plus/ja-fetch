@@ -1,8 +1,8 @@
 {
   "name": "ja-fetch",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "3kb fetch-api wrapper",
-  "main": "./lib/index.js",
+  "main": "./lib/ja-fetch.js",
   "scripts": {
     "bd": "rollup -c"
   },
@@ -29,7 +29,7 @@
     "eslint-plugin-prettier": "^4.0.0",
     "jsdoc": "^3.6.10",
     "prettier": "^2.5.1",
-    "rollup": "^2.70.2",
-    "rollup-plugin-uglify": "^6.0.4"
+    "rollup": "^2.73.0",
+    "rollup-plugin-terser": "^7.0.2"
   }
 }

@@ -1,14 +1,14 @@
-import { uglify } from 'rollup-plugin-uglify' // 代码压缩
+import { terser } from 'rollup-plugin-terser' // 代码压缩
 export default {
   input: 'src/index.js',
   output: [
     {
-      file: 'lib/index.js',
+      file: 'lib/ja-fetch.js',
     },
     {
-      file: 'lib/index.min.js',
+      file: 'lib/ja-fetch.min.js',
       sourcemap: true,
-      plugins: [uglify()],
+      plugins: [terser()],
     },
   ],
 }
