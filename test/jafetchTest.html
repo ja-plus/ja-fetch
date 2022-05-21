@@ -94,9 +94,9 @@
   )
 
   Service.interceptors.response.use(
-    (data, conf) => {
+    (data, {config}) => {
       if (data.code === 1) {
-        console.log(data, conf, 'response interceptor: ok')
+        console.log(data, config, 'response interceptor: ok')
         document.body.innerText += 'response interceptor: ok,' + JSON.stringify(data) + '\n'
         return data
       } else {
@@ -126,8 +126,8 @@
   /** remove interceptor*/
   // Service.interceptors.response.remove();
 
-  // Service.interceptors.response.use((data, conf, response) => {
-  //   console.log('interceptor:', conf, response);
+  // Service.interceptors.response.use((data, {config}, response) => {
+  //   console.log('interceptor:', config, response);
   //   if (data.code === 0) {
   //     console.log(data, 'interceptor: ok');
   //     document.body.innerText += 'interceptor: ok,' + JSON.stringify(data) + '\n';
@@ -234,7 +234,7 @@
       canceled: false,
     })
   })
-  ServiceAB.interceptors.response.use((url, config) => {
+  ServiceAB.interceptors.response.use((url, {config}) => {
     cacheArr = cacheArr.filter(item => !item.canceled) // 仅保留未清除的,对象回收
   })
   const fetchBtn = h('button', 'fetch')
