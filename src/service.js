@@ -57,7 +57,7 @@ export default class Service {
             prom = prom.then(
               data => {
                 // onFulfilled 方法中的异常不会被onRejected方法处理
-                return item.onFulfilled(data, assignedConf, response) // 可能要把response对象传给拦截器使用
+                return item.onFulfilled(data, { url, config: assignedConf }, response) // 可能要把response对象传给拦截器使用
               },
               err => {
                 return item.onRejected ? item.onRejected(err) : Promise.reject(err)

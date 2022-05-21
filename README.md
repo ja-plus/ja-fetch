@@ -78,9 +78,9 @@ Service.interceptors.request.use(
 );
 // response
 Service.interceptors.response.use(
-    (data, conf) => {
+    (data, { url, config }) => {
         if (data.code === 1) {
-            console.log(data, conf, "response interceptor: ok");
+            console.log(data, config, "response interceptor: ok");
             return data;
         } else {
             return Promise.reject("response.data.code is " + data.code);
@@ -139,11 +139,11 @@ fetchBtn.addEventListener('click', () => {
       cancel: false,
     });
   });
-  Service.interceptors.response.use((url, config) => {
+  Service.interceptors.response.use((data, { url, config }) => {
     cacheArr = cacheArr.filter((item) => !item.canceled); // clean canceled cache
   });
 ```
-#### Use Cancel Request Preset (same as previous interceptors demo )
+#### Use Cancel Request Preset
 ```javascript
   import jafetch from 'ja-fetch'
   import { commonCancelRequest } from 'ja-fetch/preset/interceptors.js'
@@ -153,11 +153,17 @@ fetchBtn.addEventListener('click', () => {
   ServiceAB.interceptors.use(
     commonCancelRequest((storedRequest, nowRequest) => {
     /**
-     * @typedef storedRequest
+     * @typedef storedRequest / nowRequest
      * @property {string} url
-     * @property {object} config
+     * @property {object} config 
      */
       return storedRequest.url === nowRequest.url
+    }, {
+        notCancelKey: 'notCancel',
+        gcCacheArrNum: 20, // 数组大于该值，则去除数组中已返回的请求
     }),
+
+    // let a request not be canceled
+    ServiceAB.get(url, {param, notCancel: true})
   )
 ```

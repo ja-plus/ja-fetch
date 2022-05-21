@@ -347,6 +347,7 @@
     console.log('发起fetch 请求... 1s后返回结果')
     ServiceAB.get('http://localhost:8080/timeoutTestData', {
       params: { timeout: 1000 },
+      // notCancel: true,
     })
       .then(response => {
         console.log('fetch response :>> ', response)
