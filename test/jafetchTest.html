@@ -357,5 +357,28 @@
       })
   })
 </script> -->
+<script type="module">
+  /* test interceptor throttle */
+  import jafetch from '../src/index.js'
+  import { commonThrottleRequest } from '../preset/interceptors.js'
+  import h from './h.js'
+  let ServiceAB = jafetch.create()
+  ServiceAB.interceptors.use(commonThrottleRequest())
 
+  const fetchBtn = h('button', 'fetch')
+  document.body.append(fetchBtn)
+  fetchBtn.addEventListener('click', () => {
+    console.log('发起fetch 请求... 1s后返回结果')
+    ServiceAB.get('http://localhost:8080/timeoutTestData', {
+      params: { timeout: 1000 },
+      // notCancel: true,
+    })
+      .then(response => {
+        console.log('fetch response :>> ', response)
+      })
+      .catch(err => {
+        console.warn('fetch请求已被取消', err)
+      })
+  })
+</script>
 </html>

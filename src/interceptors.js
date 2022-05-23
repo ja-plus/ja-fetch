@@ -1,9 +1,13 @@
+/**
+ * @typedef {((data: any, {url: string, config: object}, response: Response) => Promise | (url: string, config: object) => object)} Fulfilled
+ */
+
 class Interceptor {
   /** @type {{ id: string, onFulfilled: function, onRejected: function }[]} */
   store = []
   /**
    *
-   * @param {(data: any, {url: string, config: object}, response: Response) => Promise} onFulfilled
+   * @param {Fulfilled} onFulfilled
    * @param {(err: {url: string, config: object}) => Promise} onRejected
    * @returns {number}
    */

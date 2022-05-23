@@ -1,3 +1,5 @@
+## 1.2.3
+* add: interceptors preset `commonThrottleRequest`
 ## 1.2.2
 * pack lib 1.2.1 ...
 ## 1.2.1
@@ -5,6 +7,6 @@
 * update: interceptors preset
 ## 1.2.0
 * add: interceptors.use
-* add: interceptors preset abortRequest
+* add: interceptors preset `commonCancelRequest`
 ## 1.1.0
 * add: multi interceptors

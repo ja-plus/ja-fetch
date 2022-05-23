@@ -30,11 +30,15 @@ export default class Service {
     // 请求拦截器 multi
     if (reqInterceptor.store.length) {
       if (!assignedConf.headers) assignedConf.headers = {} // 没有headers就给一个空对象，便于拦截器中config.headers.xxx来使用
-      reqInterceptor.store.forEach(item => {
-        // TODO: async await
-        let returnConf = item.onFulfilled(url, assignedConf) // 请求拦截器中修改请求配置
-        if (returnConf) assignedConf = returnConf // 考虑使用拦截器的的时候直接修改形参option.来修改配置对象，且不返回的情况
-      })
+      try {
+        reqInterceptor.store.forEach(item => {
+          // TODO: async await
+          let returnConf = item.onFulfilled(url, assignedConf) // 请求拦截器中修改请求配置
+          if (returnConf) assignedConf = returnConf // 考虑使用拦截器的的时候直接修改形参option.来修改配置对象，且不返回的情况
+        })
+      } catch (err) {
+        return Promise.reject(err)
+      }
     }
 
     const requestInfo = { url, config: assignedConf }
