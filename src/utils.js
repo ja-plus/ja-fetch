@@ -11,3 +11,23 @@ export function createUrlParamStr(url, params) {
   }
   return tmpUrl.href
 }
+
+/**
+ * 检查interceptors onRejected 方法的返回
+ * @param {any} rejectedFuncReturn
+ * @param {'request' | 'response'} type
+ * @param {object} errObj
+ * @returns
+ */
+export function checkInterceptorsReturn(rejectedFuncReturn, type, errObj) {
+  // 校验onRejected 的返回值，希望onRejected 函数必须返回一个Promise
+  if (rejectedFuncReturn instanceof Promise) {
+    return rejectedFuncReturn
+  } else {
+    console.warn(
+      `${type}.interceptor.use(onFulfilled, onRejected): onRejected function not return Promise. Use Promise.reject() to jump to next ${type} interceptor's onRejected Function`,
+    )
+    // reject()
+    return Promise.reject(errObj)
+  }
+}

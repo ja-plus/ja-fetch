@@ -13,7 +13,7 @@
 </body>
 <!-- <script type="module">
   /* -------basic request---------------*/
-  import jafetch from '../lib/index.js'
+  import jafetch from '../src/index.js'
   const body = document.body
   jafetch
     .get('http://localhost:8080/getTestData', {
@@ -74,9 +74,10 @@
       body.innerText += 'DELETE : ok,' + JSON.stringify(res) + '\n'
     })
 </script> -->
+
 <!-- <script type="module">
   /* ------------interceptors-----------------*/
-  import jafetch from '../lib/index.js'
+  import jafetch from '../src/index.js'
   const Service = jafetch.create({
     mode: 'cors',
     // credentials: 'include' // cookie
@@ -94,7 +95,7 @@
   )
 
   Service.interceptors.response.use(
-    (data, {config}) => {
+    (data, { config }) => {
       if (data.code === 1) {
         console.log(data, config, 'response interceptor: ok')
         document.body.innerText += 'response interceptor: ok,' + JSON.stringify(data) + '\n'
@@ -327,9 +328,8 @@
       console.error('interceptor get: err', err)
       document.body.innerText += 'interceptor GET: err,' + JSON.stringify(err) + '\n'
     })
-
 </script> -->
-<script type="module">
+<!-- <script type="module">
   /* test interceptor abortController*/
   import jafetch from '../src/index.js'
   import { commonCancelRequest } from '../preset/interceptors.js'
@@ -356,6 +356,6 @@
         console.warn('fetch请求已被取消', err)
       })
   })
-</script>
+</script> -->
 
 </html>

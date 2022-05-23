@@ -1,10 +1,10 @@
 class Interceptor {
-  /** @type {{id:string,onFulfilled:function,onRejected:function}[]} */
+  /** @type {{ id: string, onFulfilled: function, onRejected: function }[]} */
   store = []
   /**
    *
-   * @param {(data:any,config:object,response:Response) => Promise} onFulfilled
-   * @param {(url:string,config:object) => Promise} onRejected
+   * @param {(data: any, {url: string, config: object}, response: Response) => Promise} onFulfilled
+   * @param {(err: {url: string, config: object}) => Promise} onRejected
    * @returns {number}
    */
   use(onFulfilled, onRejected) {

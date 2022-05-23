@@ -5,6 +5,7 @@
  * @typedef FilterParam
  * @property {string} url
  * @property {object} config
+ * @property {number} _pendingUid
  * @property {AbortController} [_controller] private param
  */
 /**
@@ -21,7 +22,7 @@
 
 /**
  * set config.notCancel = true 时则不会取消请求
- * @param {AbortFilter} [abortFilter] default: url === url
+ * @param {AbortFilter} [abortFilter] default: url === url, method === method
  * @param {Option} [option]
  * @return {{install(interceptors:Interceptors):void}}
  */
@@ -34,14 +35,14 @@ export function commonCancelRequest(abortFilter, option) {
   option = Object.assign({}, option, defaultOption)
 
   if (!abortFilter && typeof abortFilter !== 'function') {
-    abortFilter = (store, now) => store.url === now.url
+    abortFilter = (store, now) => store.url === now.url && store.config.method === now.config.method
   }
 
   return {
     install(interceptors) {
       /** @type {FilterParam[]} */
-      let cacheArr = []
-
+      let cacheArr = [] // TODO: WeakSet?
+      let uid = 1
       interceptors.request.use((url, config) => {
         if (config[option.notCancelKey]) return config
 
@@ -51,13 +52,14 @@ export function commonCancelRequest(abortFilter, option) {
           url,
           config,
           _controller: abController,
-          // pending: true
+          _pendingUid: uid,
         }
+        config._pendingUid = uid++
 
         let hasPendingRequest = false
         for (let i = 0; i < cacheArr.length; i++) {
-          let item = cacheArr[i]
-          // if (!item.pending) continue
+          const item = cacheArr[i]
+          if (!item) continue
           if (abortFilter(item, { url, config })) {
             item._controller.abort()
             hasPendingRequest = true
@@ -71,13 +73,20 @@ export function commonCancelRequest(abortFilter, option) {
         return config
       })
 
-      interceptors.response.use(data => {
-        // TODO: set storedObj.Pending false
+      interceptors.response.use((data, { config }) => {
+        for (let i = 0; i < cacheArr.length; i++) {
+          const item = cacheArr[i]
+          if (!item) continue
+          if (item._pendingUid === config._pendingUid) {
+            cacheArr[i] = null
+            break
+          }
+        }
         if (cacheArr.length > option.gcCacheArrNum) {
-          cacheArr = cacheArr.filter(item => !item.pending) // 回收对象
+          cacheArr = cacheArr.filter(Boolean) // 回收对象
         }
 
-        console.log('cacheArr', cacheArr)
+        // console.log('cacheArr', cacheArr)
         return data
       })
     },
