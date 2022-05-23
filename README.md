@@ -148,8 +148,10 @@ fetchBtn.addEventListener('click', () => {
   import jafetch from 'ja-fetch'
   import { commonCancelRequest } from 'ja-fetch/preset/interceptors.js'
   let ServiceAB = jafetch.create()
-  ServiceAB.interceptors.use(commonCancelRequest()) //
-  // or custom cancel rule
+  ServiceAB.interceptors.use(commonCancelRequest()) // url === url && method === method
+```
+or custom cancel rule
+```javascript
   ServiceAB.interceptors.use(
     commonCancelRequest((storedRequest, nowRequest) => {
     /**
@@ -160,7 +162,7 @@ fetchBtn.addEventListener('click', () => {
       return storedRequest.url === nowRequest.url
     }, {
         notCancelKey: 'notCancel',
-        gcCacheArrNum: 20, // 数组大于该值，则去除数组中已返回的请求
+        gcCacheArrNum: 20, // 数组大于该值，对数组中的元素进行回收
     }),
 
     // let a request not be canceled
