@@ -170,6 +170,9 @@ export function commonThrottleRequest(throttleFilter, option) {
             break
           }
         }
+        if (cacheArr.length > 20) {
+          cacheArr = cacheArr.filter(Boolean)
+        }
         return data
       })
     },
