@@ -9,7 +9,6 @@
 </head>
 
 <body>
-
 </body>
 <!-- <script type="module">
   /* -------basic request---------------*/
@@ -329,10 +328,10 @@
       document.body.innerText += 'interceptor GET: err,' + JSON.stringify(err) + '\n'
     })
 </script> -->
-<!-- <script type="module">
+<script type="module">
   /* test interceptor abortController*/
   import jafetch from '../src/index.js'
-  import { commonCancelRequest } from '../preset/interceptors.js'
+  import { commonCancelRequest } from '../preset/interceptors/index.js'
   import h from './h.js'
   let ServiceAB = jafetch.create()
   ServiceAB.interceptors.use(
@@ -349,18 +348,21 @@
       params: { timeout: 1000 },
       // notCancel: true,
     })
+      // ServiceAB.get('http://localhost:8080/setStatusCode', {
+      //   params: { code: 502 },
+      // })
       .then(response => {
         console.log('fetch response :>> ', response)
       })
       .catch(err => {
-        console.warn('fetch请求已被取消', err)
+        console.warn('fetch请求失败', err)
       })
   })
-</script> -->
-<script type="module">
+</script>
+<!-- <script type="module">
   /* test interceptor throttle */
   import jafetch from '../src/index.js'
-  import { commonThrottleRequest } from '../preset/interceptors.js'
+  import { commonThrottleRequest } from '../preset/interceptors/index.js'
   import h from './h.js'
   let ServiceAB = jafetch.create()
   ServiceAB.interceptors.use(commonThrottleRequest())
@@ -371,14 +373,17 @@
     console.log('发起fetch 请求... 1s后返回结果')
     ServiceAB.get('http://localhost:8080/timeoutTestData', {
       params: { timeout: 1000 },
-      // notCancel: true,
+      // notThrottle: true,
     })
+      // ServiceAB.get('http://localhost:8080/setStatusCode', {
+      //   params: { code: 500 },
+      // })
       .then(response => {
         console.log('fetch response :>> ', response)
       })
       .catch(err => {
-        console.warn('fetch请求已被取消', err)
+        console.warn('fetch 请求失败：', err)
       })
   })
-</script>
+</script> -->
 </html>
