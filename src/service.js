@@ -101,6 +101,9 @@ export default class Service {
     // })
   }
 
+  request(url, config = {}) {
+    return this.#requestAdapter(url, config)
+  }
   get(url, config = {}) {
     config.method = 'GET'
     return this.#requestAdapter(url, config)

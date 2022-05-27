@@ -10,10 +10,20 @@
 
 <body>
 </body>
-<!-- <script type="module">
+<script type="module">
   /* -------basic request---------------*/
   import jafetch from '../src/index.js'
   const body = document.body
+  jafetch
+    .request('http://localhost:8080/getTestData', {
+      method: 'GET',
+      params: { type: 'aa', data: 'ddd' },
+      mode: 'cors',
+    })
+    .then(res => {
+      console.log(res, 'request get: ok')
+      body.innerText += 'request GET: ok,' + JSON.stringify(res) + '\n'
+    })
   jafetch
     .get('http://localhost:8080/getTestData', {
       params: { type: 'aa', data: 'ddd' },
@@ -72,7 +82,7 @@
       console.log(res, 'delete : ok')
       body.innerText += 'DELETE : ok,' + JSON.stringify(res) + '\n'
     })
-</script> -->
+</script>
 
 <!-- <script type="module">
   /* ------------interceptors-----------------*/

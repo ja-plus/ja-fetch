@@ -2,6 +2,7 @@
 * change: preset/interceptors as a folder
 * fix: `commonThrottleRequest` not work correctly when request error
 * fix: `commonThrottleRequest` set notThrottle=true not work
+* add: service.request() function which can custom method
 ## 1.2.3
 * add: interceptors preset `commonThrottleRequest`
 ## 1.2.2

@@ -21,6 +21,11 @@ service.get(url,config)
 ### Basic usage
 ```javascript
 import jafetch from "ja-fetch";
+jafetch.request(url, {
+    method: 'GET',// POST PUT DELETE
+    params: { type: "aa", data: "ddd" },
+    mode: "cors",
+})
 // get
 jafetch.get(url, {
     params: { type: "aa", data: "ddd" },
