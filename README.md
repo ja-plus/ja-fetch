@@ -8,6 +8,7 @@ A simple fetch wrapper (uglify:**3kb**)
 
 config extends [Fetch API(MDN)](https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API/Using_Fetch)
 
+## TODO support mock
 ## API
 ```javascript
 jafetch.get(url, config)
@@ -38,7 +39,6 @@ jafetch.get(url, {
 jafetch.post(url, {
     params: { id: "11" }, // Concatenated after the URL
     body: { type: "json" },
-    mode: "cors",
 })
 // formData
 let formData = new FormData();
@@ -47,19 +47,16 @@ let formData = new FormData();
 jafetch.post(url, {
     params: { id: "11" },
     body: formData,
-    mode: "cors",
 })
 // put 
 jafetch.put(url, {
     params: { id: "pp" },
     body: { type: "put" },
-    mode: "cors",
 })
 // delete
 jafetch.del(url, {
     params: { id: "del" },
     body: { type: "delete" },
-    mode: "cors",
 })
 ```
 ### Interceptor demo
