@@ -42,7 +42,7 @@ export default function commonThrottleRequest(throttleFilter, option) {
       let cacheArr_clean = config => {
         // 请求已返回则移除保存
         for (let i = 0; i < cacheArr.length; i++) {
-          if (cacheArr[i].requestId === config._commonThrottleRequest.requestId) {
+          if (cacheArr[i]?.requestId === config._commonThrottleRequest?.requestId) {
             cacheArr[i] = null
             break
           }

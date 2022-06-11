@@ -2,6 +2,7 @@
 * change: preset/interceptors as a folder
 * fix: `commonThrottleRequest` not work correctly when request error
 * fix: `commonThrottleRequest` set notThrottle=true not work
+* fix: `commonThrottleRequest` requestId of null bug in cacheArr_clean function
 * add: service.request() function which can custom method
 ## 1.2.3
 * add: interceptors preset `commonThrottleRequest`
