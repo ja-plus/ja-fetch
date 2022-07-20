@@ -151,6 +151,8 @@ fetchBtn.addEventListener('click', () => {
   import { commonCancelRequest, commonThrottleRequest } from 'ja-fetch/preset/interceptors/index.js'
   let ServiceAB = jafetch.create()
   ServiceAB.interceptors.use(commonCancelRequest()) // url === url && method === method
+  // let a request not be canceled
+  ServiceAB.get(url, {param, notCancel: true})
 ```
 or custom cancel rule
 ```javascript

@@ -7,7 +7,9 @@
 export function createUrlParamStr(url, params) {
   let tmpUrl = new URL(url, window.location) // 如果是url是相对路径，则会加上第二个参数
   for (const key in params) {
-    tmpUrl.searchParams.append(key, params[key])
+    if (Object.hasOwnProperty.call(params, key)) {
+      tmpUrl.searchParams.append(key, params[key])
+    }
   }
   return tmpUrl.href
 }
