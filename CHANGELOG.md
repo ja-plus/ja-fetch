@@ -1,6 +1,6 @@
 ## 1.3.0
-* rebuild: typescript
-* fix: get method - parameter append
+* rebuild: `typescript`
+* fix: get method - parameter append to url error
 ## 1.2.4
 * change: preset/interceptors as a folder
 * fix: `commonThrottleRequest` not work correctly when request error

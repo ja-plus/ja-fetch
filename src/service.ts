@@ -1,5 +1,5 @@
 import coreFetch from './coreFetch';
-import Interceptors from './interceptors.js';
+import Interceptors from './interceptors';
 import { checkInterceptorsReturn } from './utils';
 
 export interface JaFetchRequestInit extends RequestInit {
@@ -9,7 +9,7 @@ export interface JaFetchRequestInit extends RequestInit {
 }
 
 export default class Service {
-  defaultConf = {
+  defaultConf: JaFetchRequestInit = {
     headers: {},
   };
   interceptors = new Interceptors();
@@ -28,7 +28,7 @@ export default class Service {
    * @param {string} url
    * @param {object} config
    */
-  #requestAdapter(url: string, config: JaFetchRequestInit) {
+  private requestAdapter(url: string, config: JaFetchRequestInit) {
     const reqInterceptor = this.interceptors.request; // 请求拦截器
     const resInterceptor = this.interceptors.response; // 响应拦截器
     let assignedConf = Object.assign({}, this.defaultConf, config);
@@ -105,22 +105,22 @@ export default class Service {
   }
 
   request(url: string, config: JaFetchRequestInit = {}) {
-    return this.#requestAdapter(url, config);
+    return this.requestAdapter(url, config);
   }
   get(url: string, config: JaFetchRequestInit = {}) {
     config.method = 'GET';
-    return this.#requestAdapter(url, config);
+    return this.requestAdapter(url, config);
   }
   post(url: string, config: JaFetchRequestInit = {}) {
     config.method = 'POST';
-    return this.#requestAdapter(url, config);
+    return this.requestAdapter(url, config);
   }
   put(url: string, config: JaFetchRequestInit = {}) {
     config.method = 'PUT';
-    return this.#requestAdapter(url, config);
+    return this.requestAdapter(url, config);
   }
   del(url: string, config: JaFetchRequestInit = {}) {
     config.method = 'DELETE';
-    return this.#requestAdapter(url, config);
+    return this.requestAdapter(url, config);
   }
 }
