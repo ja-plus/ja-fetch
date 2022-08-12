@@ -4,7 +4,6 @@
  * 取消请求可使用abortController()
  ***********/
 
-import Service from './service.js'
+import Service from './service';
 
-let service = new Service()
-export default service
+export default new Service();
