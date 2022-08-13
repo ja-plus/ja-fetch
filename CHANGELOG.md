@@ -1,6 +1,8 @@
 ## 1.3.0
 * rebuild: `typescript`
 * fix: get method - parameter append to url error
+* fix: `commonCancelRequest` set notInterceptKey not work 
+* fix: `commonThrottleRequest` set notInterceptKey not work 
 ## 1.2.4
 * change: preset/interceptors as a folder
 * fix: `commonThrottleRequest` not work correctly when request error

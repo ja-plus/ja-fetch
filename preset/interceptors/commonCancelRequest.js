@@ -31,65 +31,65 @@ export default function commonCancelRequest(abortFilter, option) {
   const defaultOption = {
     notInterceptKey: 'notCancel',
     gcCacheArrNum: 20,
-  }
-  option = Object.assign({}, option, defaultOption)
+  };
+  option = Object.assign({}, defaultOption, option);
 
   if (!abortFilter && typeof abortFilter !== 'function') {
-    abortFilter = (store, now) => store.url === now.url && store.config.method === now.config.method
+    abortFilter = (store, now) => store.url === now.url && store.config.method === now.config.method;
   }
 
   return {
     install(interceptors) {
       /** @type {RequestInfo[]} */
-      let cacheArr = []
-      let requestId = 1
+      let cacheArr = [];
+      let requestId = 1;
       interceptors.request.use((url, config) => {
-        if (config[option.notInterceptKey]) return config
+        if (config[option.notInterceptKey]) return config;
 
-        const abController = new AbortController()
-        config.signal = abController.signal
+        const abController = new AbortController();
+        config.signal = abController.signal;
         const storedObj = {
           url,
           config,
           requestId,
           _controller: abController,
-        }
+        };
         config._commonCancelRequest = {
           requestId: requestId++,
-        }
+        };
 
-        let hasPendingRequest = false
+        let hasPendingRequest = false;
         for (let i = 0; i < cacheArr.length; i++) {
-          const item = cacheArr[i]
-          if (!item) continue
+          const item = cacheArr[i];
+          if (!item) continue;
           if (abortFilter(item, { url, config })) {
-            item._controller.abort()
-            hasPendingRequest = true
-            cacheArr[i] = storedObj // replace old obj with new
+            item._controller.abort();
+            hasPendingRequest = true;
+            cacheArr[i] = storedObj; // replace old obj with new
           }
         }
 
         if (!hasPendingRequest) {
-          cacheArr.push(storedObj)
+          cacheArr.push(storedObj);
         }
-        return config
-      })
+        return config;
+      });
 
       interceptors.response.use((data, { config }) => {
         for (let i = 0; i < cacheArr.length; i++) {
-          const item = cacheArr[i]
-          if (!item) continue
+          const item = cacheArr[i];
+          if (!item) continue;
           if (item.requestId === config._commonCancelRequest?.requestId) {
-            cacheArr[i] = null
-            break
+            cacheArr[i] = null;
+            break;
           }
         }
         if (cacheArr.length > option.gcCacheArrNum) {
-          cacheArr = cacheArr.filter(Boolean) // 回收对象
+          cacheArr = cacheArr.filter(Boolean); // 回收对象
         }
 
-        return data
-      })
+        return data;
+      });
     },
-  }
+  };
 }
