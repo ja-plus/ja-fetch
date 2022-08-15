@@ -1,3 +1,5 @@
+## 1.3.1
+* fixe: package.json files add types folder 
 ## 1.3.0
 * rebuild: `typescript`
 * fix: get method - parameter append to url error
