@@ -20,7 +20,7 @@ export default class Service {
     this.defaultConf = Object.assign({}, this.defaultConf, defaultConf);
   }
   /** create a new service */
-  create(config: JaFetchRequestInit) {
+  create(config?: JaFetchRequestInit) {
     return new Service(config);
   }
   /**

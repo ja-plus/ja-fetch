@@ -1,3 +1,5 @@
+## 1.3.2
+fix: jafetch.create parameter not a must
 ## 1.3.1
 * fixe: package.json files add types folder 
 ## 1.3.0

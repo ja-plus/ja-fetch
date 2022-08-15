@@ -7,7 +7,7 @@ export default class Service {
     defaultConf: JaFetchRequestInit;
     interceptors: Interceptors;
     constructor(defaultConf?: JaFetchRequestInit);
-    create(config: JaFetchRequestInit): Service;
+    create(config?: JaFetchRequestInit): Service;
     private requestAdapter;
     request(url: string, config?: JaFetchRequestInit): Promise<any>;
     get(url: string, config?: JaFetchRequestInit): Promise<any>;
