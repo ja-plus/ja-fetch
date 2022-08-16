@@ -1,5 +1,8 @@
 ## 1.3.2
 fix: jafetch.create parameter not a must
+fix: `interceptors.request.use`, `interceptors.response.use` parameter optional, not must
+add: enhance `interceptors.use` function can pass the Interceptors type
+fix: `interceptor.remove` optional parameter,not must
 ## 1.3.1
 * fixe: package.json files add types folder 
 ## 1.3.0

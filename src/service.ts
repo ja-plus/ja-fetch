@@ -47,7 +47,7 @@ export default class Service {
       }
     }
 
-    const requestInfo = { url, config: assignedConf };
+    const requestInfo = { url, init: assignedConf };
 
     // return new Promise((resolve, reject) => {
     return coreFetch(url, assignedConf).then(
