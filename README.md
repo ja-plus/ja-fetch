@@ -8,7 +8,8 @@ A simple fetch wrapper (uglify:**3kb**)
 
 config extends [Fetch API(MDN)](https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API/Using_Fetch)
 
-## TODO support mock
+## TODO
+* getPendingPromiseList
 ## API
 ```javascript
 jafetch.get(url, config)
