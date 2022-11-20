@@ -14,8 +14,8 @@
  */
 /**
  * @callback FilterFunc
- * @param {RequestInfo} storedRequest
- * @param {RequestInfo} nowRequest
+ * @param {RequestInfo} currentConfig
+ * @param {RequestInfo} storedConfig
  * @returns {boolean}
  */
 
@@ -32,7 +32,7 @@ export default function commonThrottleRequest(throttleFilter, option) {
   };
   option = Object.assign({}, defaultOption, option);
   if (!throttleFilter && typeof throttleFilter !== 'function') {
-    throttleFilter = (store, now) => store.url === now.url && store.config.method === now.config.method;
+    throttleFilter = (currentConfig, storedConfig) => currentConfig.url === storedConfig.url && currentConfig.config.method === storedConfig.config.method;
   }
 
   return {
@@ -61,12 +61,12 @@ export default function commonThrottleRequest(throttleFilter, option) {
           let emptyIndex = cacheArr.length; // cacheArr 中空位的index
           const storeObj = { requestId, url, config };
           for (let i = 0; i < cacheArr.length; i++) {
-            const item = cacheArr[i];
-            if (!item) {
+            const storedConfig = cacheArr[i];
+            if (!storedConfig) {
               emptyIndex = i;
               continue;
             }
-            if (throttleFilter(item, { url, config })) {
+            if (throttleFilter({ url, config }, storedConfig)) {
               hasRequestStored = true;
               throw new Error('commonThrottleRequest: 该请求已发起未返回，不能重新发起。已忽略。');
             }

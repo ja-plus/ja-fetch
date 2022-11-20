@@ -15,8 +15,8 @@
  */
 /**
  * @callback FilterFunc
- * @param {RequestInfo} storedRequest
- * @param {RequestInfo} nowRequest
+ * @param {RequestInfo} currentConfig
+ * @param {RequestInfo} storedConfig
  * @returns {boolean}
  */
 /**
@@ -35,7 +35,7 @@ export default function commonCancelRequest(abortFilter, option) {
   option = Object.assign({}, defaultOption, option);
 
   if (!abortFilter && typeof abortFilter !== 'function') {
-    abortFilter = (store, now) => store.url === now.url && store.config.method === now.config.method;
+    abortFilter = (currentConfig, storedConfig) => currentConfig.url === storedConfig.url && currentConfig.config.method === storedConfig.config.method;
   }
 
   return {
@@ -60,10 +60,10 @@ export default function commonCancelRequest(abortFilter, option) {
 
         let hasPendingRequest = false;
         for (let i = 0; i < cacheArr.length; i++) {
-          const item = cacheArr[i];
-          if (!item) continue;
-          if (abortFilter(item, { url, config })) {
-            item._controller.abort();
+          const storedConfig = cacheArr[i];
+          if (!storedConfig) continue;
+          if (abortFilter({ url, config }, storedConfig)) {
+            storedConfig._controller.abort();
             hasPendingRequest = true;
             cacheArr[i] = storedObj; // replace old obj with new
           }
