@@ -158,7 +158,7 @@ fetchBtn.addEventListener('click', () => {
 or custom cancel rule
 ```javascript
   ServiceAB.interceptors.use(
-    commonCancelRequest((storedRequest, nowRequest) => {
+    commonCancelRequest((nowRequest, storedRequest) => {
     /**
      * @typedef storedRequest / nowRequest
      * @property {string} url
