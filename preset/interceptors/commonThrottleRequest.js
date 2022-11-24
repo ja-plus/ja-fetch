@@ -32,7 +32,8 @@ export default function commonThrottleRequest(throttleFilter, option) {
   };
   option = Object.assign({}, defaultOption, option);
   if (!throttleFilter && typeof throttleFilter !== 'function') {
-    throttleFilter = (currentConfig, storedConfig) => currentConfig.url === storedConfig.url && currentConfig.config.method === storedConfig.config.method;
+    throttleFilter = (currentConfig, storedConfig) =>
+      currentConfig.url === storedConfig.url && currentConfig.config.method === storedConfig.config.method;
   }
 
   return {

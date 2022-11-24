@@ -4,7 +4,7 @@
 /**
  * @typedef CommonCancelOption
  * @property {string} notInterceptKey
- * @property {number} [gcCacheArrNum=20]  缓存数组多于这个值则会过滤掉已返回的接口
+ * @property {number} [gcCacheArrNum=20]
  */
 /**
  * @typedef RequestInfo
@@ -20,7 +20,7 @@
  * @returns {boolean}
  */
 /**
- * 取消之前发起的相同的请求
+ * 用AbortController 取消之前发起的相同的请求
  * set config.notCancel = true 时则不拦截
  * @param {FilterFunc} [abortFilter] default: url === url, method === method
  * @param {CommonCancelOption} [option]
@@ -32,10 +32,11 @@ export default function commonCancelRequest(abortFilter, option) {
     notInterceptKey: 'notCancel',
     gcCacheArrNum: 20,
   };
-  option = Object.assign({}, defaultOption, option);
+  option = Object.assign({}, defaultOption, option || {});
 
   if (!abortFilter && typeof abortFilter !== 'function') {
-    abortFilter = (currentConfig, storedConfig) => currentConfig.url === storedConfig.url && currentConfig.config.method === storedConfig.config.method;
+    abortFilter = (currentConfig, storedConfig) =>
+      currentConfig.url === storedConfig.url && currentConfig.config.method === storedConfig.config.method;
   }
 
   return {
