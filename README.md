@@ -12,24 +12,25 @@ config extends [Fetch API(MDN)](https://developer.mozilla.org/zh-CN/docs/Web/API
 * getPendingPromiseList
 ## API
 ```javascript
-jafetch.get(url, config)
-let service = jafetch.create(config)
-service.interceptors.request.use(onFulfilled,onRejected)
-service.interceptors.response.use(onFulfilled,onRejected)
-service.interceptors.use(preset)
-service.get(url,config)
+import http from 'ja-fetch';
+http.get(url, config);
+let service = http.create(config);
+service.interceptors.request.use(onFulfilled,onRejected);
+service.interceptors.response.use(onFulfilled,onRejected);
+service.interceptors.use(preset);
+service.get(url,config);
 ```
 ## Usage Demo
 ### Basic usage
 ```javascript
-import jafetch from "ja-fetch";
-jafetch.request(url, {
+import http from "ja-fetch";
+http.request(url, {
     method: 'GET',// POST PUT DELETE
     params: { type: "aa", data: "ddd" },
     mode: "cors",
 })
 // get
-jafetch.get(url, {
+http.get(url, {
     params: { type: "aa", data: "ddd" },
     mode: "cors",
     // credentials: 'include',
@@ -37,7 +38,7 @@ jafetch.get(url, {
     // responseType: 'response' // return raw fetch Response Object
 })
 // post
-jafetch.post(url, {
+http.post(url, {
     params: { id: "11" }, // Concatenated after the URL
     body: { type: "json" },
 })
@@ -45,33 +46,33 @@ jafetch.post(url, {
 let formData = new FormData();
     formData.append("type", "formData");
 
-jafetch.post(url, {
+http.post(url, {
     params: { id: "11" },
     body: formData,
 })
 // put 
-jafetch.put(url, {
+http.put(url, {
     params: { id: "pp" },
     body: { type: "put" },
 })
 // delete
-jafetch.del(url, {
+http.del(url, {
     params: { id: "del" },
     body: { type: "delete" },
 })
 ```
 ### Interceptor demo
 ```javascript
-import jafetch from "ja-fetch";
-const Service = jafetch.create({
+import http from "ja-fetch";
+const Service = http.create({
     mode: "cors",
     // credentials: 'include' // cookie
     // responseType: 'text'
 });
 // request
 Service.interceptors.request.use(
-    (url, config) => {
-        config.headers.userToken = "11111";
+    (url, init) => {
+        init.headers.userToken = "11111";
         return config;
     },
     (err) => {
@@ -81,9 +82,9 @@ Service.interceptors.request.use(
 );
 // response
 Service.interceptors.response.use(
-    (data, { url, config }) => {
+    (data, { url, init }) => {
         if (data.code === 1) {
-            console.log(data, config, "response interceptor: ok");
+            console.log(data, init, "response interceptor: ok");
             return data;
         } else {
             return Promise.reject("response.data.code is " + data.code);
@@ -99,7 +100,7 @@ Service.interceptors.response.use(
 Use [AbortController(MDN)](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController) to cancel request  (`Chrome >= 66`)
 #### Basic
 ```javascript 
-import jafetch from 'ja-fetch';
+import http from 'ja-fetch';
 const fetchBtn = document.querySelector('#fetch'); // <button></button>
 let controller; // save request abortController
 
@@ -107,7 +108,7 @@ fetchBtn.addEventListener('click', () => {
     if (controller) controller.abort(); // abort a request
 
     controller = new AbortController();
-    jafetch.get('http://localhost:8080/timeoutTestData', { 
+    http.get('http://localhost:8080/timeoutTestData', { 
         params: { timeout: 4000 }, 
         signal: controller.signal
     }).then(data => {
@@ -123,10 +124,10 @@ fetchBtn.addEventListener('click', () => {
 ```
 #### In interceptors
 ```javascript
-  import jafetch from "ja-fetch";
-  let Service = jafetch.create();
+  import http from "ja-fetch";
+  let Service = http.create();
   let cacheArr = [];
-  Service.interceptors.request.use((url, config) => {
+  Service.interceptors.request.use((url, init) => {
     cacheArr.forEach((item) => {
       // abort same url
       if (item.url === url) {
@@ -135,22 +136,22 @@ fetchBtn.addEventListener('click', () => {
       }
     });
     let abController = new AbortController();
-    config.signal = abController.signal;
+    init.signal = abController.signal;
     cacheArr.push({
       url,
       controller: abController,
       cancel: false,
     });
   });
-  Service.interceptors.response.use((data, { url, config }) => {
+  Service.interceptors.response.use((data, { url, init }) => {
     cacheArr = cacheArr.filter((item) => !item.canceled); // clean canceled cache
   });
 ```
 #### Use Cancel Request Preset
 ```javascript
-  import jafetch from 'ja-fetch'
-  import { commonCancelRequest, commonThrottleRequest } from 'ja-fetch/preset/interceptors/index.js'
-  let ServiceAB = jafetch.create()
+  import http from 'ja-fetch'
+  import { commonCancelRequest, commonThrottleRequest } from 'ja-fetch/preset/interceptors'
+  let ServiceAB = http.create()
   ServiceAB.interceptors.use(commonCancelRequest()) // url === url && method === method
   // let a request not be canceled
   ServiceAB.get(url, {param, notCancel: true})
@@ -162,7 +163,7 @@ or custom cancel rule
     /**
      * @typedef storedRequest / nowRequest
      * @property {string} url
-     * @property {object} config 
+     * @property {RequestInit} init 
      */
       return storedRequest.url === nowRequest.url
     }, {

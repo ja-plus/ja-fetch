@@ -1,3 +1,6 @@
+## 1.3.4
+update: `README.md`
+update: `package.json` main to ja-fetch.min.js
 ## 1.3.3
 update: `commonCancelRequest`,`commonThrottleRequest` -> `abortFilter` param order.
 add: `preset/interceptors` type declare
