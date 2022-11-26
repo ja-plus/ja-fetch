@@ -8,7 +8,7 @@
 /**
  * @typedef RequestInfo
  * @property {string} url
- * @property {object} config
+ * @property {RequestInit} init
  * @property {number} requestId private param
  * @property {AbortController} [_controller] private param
  */
@@ -33,17 +33,18 @@ export default function commonThrottleRequest(throttleFilter, option) {
   option = Object.assign({}, defaultOption, option);
   if (!throttleFilter && typeof throttleFilter !== 'function') {
     throttleFilter = (currentConfig, storedConfig) =>
-      currentConfig.url === storedConfig.url && currentConfig.config.method === storedConfig.config.method;
+      currentConfig.url === storedConfig.url && currentConfig.init.method === storedConfig.init.method;
   }
 
   return {
     install(interceptors) {
+      let requestId = 1;
       /** @type {RequestInfo[]} 保存*/
       let cacheArr = [];
-      let cacheArr_clean = config => {
+      let cacheArr_clean = init => {
         // 请求已返回则移除保存
         for (let i = 0; i < cacheArr.length; i++) {
-          if (cacheArr[i]?.requestId === config._commonThrottleRequest?.requestId) {
+          if (cacheArr[i]?.requestId === init._commonThrottleRequest?.requestId) {
             cacheArr[i] = null;
             break;
           }
@@ -52,50 +53,53 @@ export default function commonThrottleRequest(throttleFilter, option) {
           cacheArr = cacheArr.filter(Boolean);
         }
       };
-      let requestId = 1;
 
       interceptors.request.use(
-        (url, config) => {
-          if (config[option.notInterceptKey]) return config;
-
+        /**
+         * request onFullfilled
+         * @param {string} url
+         * @param {RequestInit} init will pass to fetch
+         * @returns
+         */
+        (url, init) => {
+          if (init[option.notInterceptKey]) return init;
+          requestId++;
+          const storeObj = { requestId, url, init };
+          init._commonThrottleRequest = { requestId };
           let hasRequestStored = false;
+
           let emptyIndex = cacheArr.length; // cacheArr 中空位的index
-          const storeObj = { requestId, url, config };
+
           for (let i = 0; i < cacheArr.length; i++) {
             const storedConfig = cacheArr[i];
             if (!storedConfig) {
               emptyIndex = i;
               continue;
             }
-            if (throttleFilter({ url, config }, storedConfig)) {
+            if (throttleFilter({ url, init }, storedConfig)) {
               hasRequestStored = true;
-              throw new Error('commonThrottleRequest: 该请求已发起未返回，不能重新发起。已忽略。');
+              throw new Error('commonThrottleRequest: The request has been send but not received.Request has been ignore');
             }
           }
-          // 传递到response 回调中
-          config._commonThrottleRequest = {
-            requestId: requestId++,
-          };
 
           if (!hasRequestStored) {
-            // 没保存请求则保存
             cacheArr[emptyIndex] = storeObj;
           }
-          return config;
+          return init;
         },
         err => {
-          if (err.config) cacheArr_clean(err.config);
+          if (err.init) cacheArr_clean(err.init);
           return Promise.reject(err);
         },
       );
 
       interceptors.response.use(
-        (data, { config }) => {
-          cacheArr_clean(config);
+        (data, { init }) => {
+          cacheArr_clean(init);
           return data;
         },
         err => {
-          if (err.config) cacheArr_clean(err.config);
+          if (err.init) cacheArr_clean(err.init);
           return Promise.reject(err);
         },
       );

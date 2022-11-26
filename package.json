@@ -1,6 +1,6 @@
 {
   "name": "ja-fetch",
-  "version": "1.3.2",
+  "version": "1.3.3",
   "description": "3kb fetch-api wrapper",
   "main": "lib/ja-fetch.js",
   "source":"src/index.ts", 

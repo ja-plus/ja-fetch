@@ -1,6 +1,7 @@
 ## 1.3.3
 update: `commonCancelRequest`,`commonThrottleRequest` -> `abortFilter` param order.
 add: `preset/interceptors` type declare
+add: `commonCancelRequest` support browser without `AbortController`
 ## 1.3.2
 fix: jafetch.create parameter not a must
 fix: `interceptors.request.use`, `interceptors.response.use` parameter optional, not must

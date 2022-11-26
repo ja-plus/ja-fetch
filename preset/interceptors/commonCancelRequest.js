@@ -59,9 +59,7 @@ export default function commonCancelRequest(abortFilter, option) {
           /**@type {RequestInfo} */
           let storedObj = { url, init, requestId };
 
-          init._commonCancelRequest = {
-            requestId,
-          };
+          init._commonCancelRequest = { requestId };
 
           if (window.AbortController) {
             const abController = new AbortController();
@@ -96,21 +94,19 @@ export default function commonCancelRequest(abortFilter, option) {
 
       interceptors.response.use((data, { url, init }) => {
         let isReject = false;
-        let id = null;
         for (let i = 0; i < cacheArr.length; i++) {
           const item = cacheArr[i];
           if (!item) continue;
           if (item.requestId === init._commonCancelRequest?.requestId) {
             isReject = Boolean(item?.canceled);
             cacheArr[i] = null;
-            id = item.requestId;
             break;
           }
         }
         if (cacheArr.length > option.gcCacheArrNum) {
           cacheArr = cacheArr.filter(Boolean); // 回收对象
         }
-        return isReject ? Promise.reject(`Reuqest: ${url} has been ignored. requestId:${id}`) : data;
+        return isReject ? Promise.reject(`Reuqest: ${url} has been ignored.`) : data;
       });
     },
   };
