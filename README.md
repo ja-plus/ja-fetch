@@ -13,12 +13,12 @@ config extends [Fetch API(MDN)](https://developer.mozilla.org/zh-CN/docs/Web/API
 ## API
 ```javascript
 import http from 'ja-fetch';
-http.get(url, config);
-let service = http.create(config);
-service.interceptors.request.use(onFulfilled,onRejected);
-service.interceptors.response.use(onFulfilled,onRejected);
+http.get(url, init);
+let service = http.create(init);
+service.interceptors.request.use(onFulfilled, onRejected);
+service.interceptors.response.use(onFulfilled, onRejected);
 service.interceptors.use(preset);
-service.get(url,config);
+service.get(url, init);
 ```
 ## Usage Demo
 ### Basic usage
@@ -73,7 +73,7 @@ const Service = http.create({
 Service.interceptors.request.use(
     (url, init) => {
         init.headers.userToken = "11111";
-        return config;
+        return init;
     },
     (err) => {
         console.log("request interceptor err:", err);
