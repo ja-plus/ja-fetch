@@ -9,7 +9,7 @@
 /**
  * @typedef RequestInfo
  * @property {string} url
- * @property {object} config
+ * @property {RequestInit} init
  * @property {number} requestId private param
  * @property {AbortController} [_controller] private param
  */
@@ -19,6 +19,7 @@
  * @param {RequestInfo} storedConfig
  * @returns {boolean}
  */
+
 /**
  * 用AbortController 取消之前发起的相同的请求
  * set config.notCancel = true 时则不拦截
@@ -35,8 +36,7 @@ export default function commonCancelRequest(abortFilter, option) {
   option = Object.assign({}, defaultOption, option || {});
 
   if (!abortFilter && typeof abortFilter !== 'function') {
-    abortFilter = (currentConfig, storedConfig) =>
-      currentConfig.url === storedConfig.url && currentConfig.config.method === storedConfig.config.method;
+    abortFilter = (currentConfig, storedConfig) => currentConfig.url === storedConfig.url && currentConfig.init.method === storedConfig.init.method;
   }
 
   return {
@@ -44,52 +44,73 @@ export default function commonCancelRequest(abortFilter, option) {
       /** @type {RequestInfo[]} */
       let cacheArr = [];
       let requestId = 1;
-      interceptors.request.use((url, config) => {
-        if (config[option.notInterceptKey]) return config;
+      interceptors.request.use(
+        /**
+         * request onFullfilled
+         * @param {string} url
+         * @param {RequestInit} init will pass to fetch
+         * @returns
+         */
+        (url, init) => {
+          if (init[option.notInterceptKey]) return init;
+          requestId++;
 
-        const abController = new AbortController();
-        config.signal = abController.signal;
-        const storedObj = {
-          url,
-          config,
-          requestId,
-          _controller: abController,
-        };
-        config._commonCancelRequest = {
-          requestId: requestId++,
-        };
+          let hasPendingRequest = false;
+          /**@type {RequestInfo} */
+          let storedObj = { url, init, requestId };
 
-        let hasPendingRequest = false;
-        for (let i = 0; i < cacheArr.length; i++) {
-          const storedConfig = cacheArr[i];
-          if (!storedConfig) continue;
-          if (abortFilter({ url, config }, storedConfig)) {
-            storedConfig._controller.abort();
-            hasPendingRequest = true;
-            cacheArr[i] = storedObj; // replace old obj with new
+          init._commonCancelRequest = {
+            requestId,
+          };
+
+          if (window.AbortController) {
+            const abController = new AbortController();
+            init.signal = abController.signal;
+            storedObj._controller = abController;
+          } else {
+            init._commonCancelRequest.canceled = false;
           }
-        }
+          // check if has pending request
+          for (let i = 0; i < cacheArr.length; i++) {
+            const storedConfig = cacheArr[i];
+            if (!storedConfig) continue;
+            if (abortFilter({ url, init }, storedConfig)) {
+              if (window.AbortController) {
+                hasPendingRequest = true; // not push to cache
+                storedConfig._controller?.abort(); // abort request
+                cacheArr[i] = storedObj; // replace old cahce with new
+              } else {
+                // sign as cancelled，deal in response
+                storedConfig.canceled = true;
+              }
+            }
+          }
 
-        if (!hasPendingRequest) {
-          cacheArr.push(storedObj);
-        }
-        return config;
-      });
+          // if not has pending request, add to cache
+          if (!hasPendingRequest) {
+            cacheArr.push(storedObj);
+          }
+          return init;
+        },
+      );
 
-      interceptors.response.use((data, { config }) => {
+      interceptors.response.use((data, { url, init }) => {
+        let isReject = false;
+        let id = null;
         for (let i = 0; i < cacheArr.length; i++) {
           const item = cacheArr[i];
           if (!item) continue;
-          if (item.requestId === config._commonCancelRequest?.requestId) {
+          if (item.requestId === init._commonCancelRequest?.requestId) {
+            isReject = Boolean(item?.canceled);
             cacheArr[i] = null;
+            id = item.requestId;
             break;
           }
         }
         if (cacheArr.length > option.gcCacheArrNum) {
           cacheArr = cacheArr.filter(Boolean); // 回收对象
         }
-
-        return data;
+        return isReject ? Promise.reject(`Reuqest: ${url} has been ignored. requestId:${id}`) : data;
       });
     },
   };
