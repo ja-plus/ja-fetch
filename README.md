@@ -65,7 +65,8 @@ http.del(url, {
 ```javascript
 import http from "ja-fetch";
 const Service = http.create({
-    mode: "cors",
+  mode: "cors",
+    // baseURL: 'http://xxx',
     // credentials: 'include' // cookie
     // responseType: 'text'
 });
@@ -175,3 +176,6 @@ or custom cancel rule
     ServiceAB.get(url, {param, notCancel: true})
   )
 ```
+
+## About project 
+* node > 16

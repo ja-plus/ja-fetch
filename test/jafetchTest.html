@@ -10,12 +10,13 @@
 
 <body>
 </body>
-<!-- <script type="module">
+<script type="module">
   /* -------basic request---------------*/
-  import jafetch from '../lib/ja-fetch.js';
+  import http from '../lib/ja-fetch.js';
   const body = document.body;
-  jafetch
-    .request('http://localhost:8080/getTestData', {
+  let service = http.create({ baseURL: 'http://localhost:8080' });
+  service
+    .request('/getTestData', {
       method: 'GET',
       params: { type: 'aa', data: 'ddd' },
       mode: 'cors',
@@ -24,8 +25,8 @@
       console.log(res, 'request get: ok');
       body.innerText += 'request GET: ok,' + JSON.stringify(res) + '\n';
     });
-  jafetch
-    .get('http://localhost:8080/getTestData', {
+  service
+    .get('/getTestData', {
       params: { type: 'aa', data: 'ddd' },
       mode: 'cors',
       // credentials: 'include',
@@ -36,8 +37,8 @@
       body.innerText += 'GET: ok,' + JSON.stringify(res) + '\n';
     });
 
-  jafetch
-    .post('http://localhost:8080/postTestData', {
+  service
+    .post('/postTestData', {
       params: { id: '11' },
       body: { type: 'json' },
       mode: 'cors',
@@ -50,8 +51,8 @@
   let formData = new FormData();
   formData.append('type', 'formData');
 
-  jafetch
-    .post('http://localhost:8080/postTestData', {
+  service
+    .post('/postTestData', {
       params: { id: '11' },
       body: formData,
       mode: 'cors',
@@ -61,8 +62,8 @@
       body.innerText += 'POST form data: ok,' + JSON.stringify(res) + '\n';
     });
 
-  jafetch
-    .put('http://localhost:8080/putTestData', {
+  service
+    .put('/putTestData', {
       params: { id: 'pp' },
       body: { type: 'put' },
       mode: 'cors',
@@ -72,8 +73,8 @@
       body.innerText += 'PUT json: ok,' + JSON.stringify(res) + '\n';
     });
 
-  jafetch
-    .del('http://localhost:8080/delTestData', {
+  service
+    .del('/delTestData', {
       params: { id: 'del' },
       body: { type: 'delete' },
       mode: 'cors',
@@ -82,7 +83,7 @@
       console.log(res, 'delete : ok');
       body.innerText += 'DELETE : ok,' + JSON.stringify(res) + '\n';
     });
-</script> -->
+</script>
 
 <!-- <script type="module">
   /* ------------interceptors-----------------*/
@@ -378,7 +379,7 @@
       });
   });
 </script> -->
-<script type="module">
+<!-- <script type="module">
   /* test interceptor throttle */
   import jafetch from '../lib/ja-fetch.js';
   import { commonThrottleRequest } from '../preset/interceptors/index.js';
@@ -405,5 +406,6 @@
         console.warn('fetch 请求失败：', err);
       });
   });
-</script>
+</script> -->
+
 </html>

@@ -26,9 +26,7 @@ export function checkInterceptorsReturn(rejectedFuncReturn: any, type: 'request'
   if (rejectedFuncReturn instanceof Promise) {
     return rejectedFuncReturn;
   } else {
-    console.warn(
-      `${type}.interceptor.use(onFulfilled, onRejected): onRejected not return Promise. Use Promise.reject() to jump to next ${type} interceptor's onRejected`,
-    );
+    console.warn(`${type}.interceptor.use(onFulfilled, onRejected): onRejected not return Promise.`);
     // reject()
     return Promise.reject(errObj);
   }

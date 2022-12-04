@@ -1,3 +1,5 @@
+## 1.3.5
+add: service support `baseURL`
 ## 1.3.4
 update: `README.md`
 update: `package.json` main to ja-fetch.min.js

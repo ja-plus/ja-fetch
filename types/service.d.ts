@@ -1,17 +1,18 @@
 import Interceptors from './interceptors';
 export interface JaFetchRequestInit extends RequestInit {
+    baseURL?: string;
     params?: any;
     responseType?: 'text' | 'blob' | 'arraybuffer' | 'response';
 }
 export default class Service {
-    defaultConf: JaFetchRequestInit;
+    defaultInit: JaFetchRequestInit;
     interceptors: Interceptors;
-    constructor(defaultConf?: JaFetchRequestInit);
-    create(config?: JaFetchRequestInit): Service;
+    constructor(defaultInit?: JaFetchRequestInit);
+    create(init?: JaFetchRequestInit): Service;
     private requestAdapter;
-    request(url: string, config?: JaFetchRequestInit): Promise<any>;
-    get(url: string, config?: JaFetchRequestInit): Promise<any>;
-    post(url: string, config?: JaFetchRequestInit): Promise<any>;
-    put(url: string, config?: JaFetchRequestInit): Promise<any>;
-    del(url: string, config?: JaFetchRequestInit): Promise<any>;
+    request(url: string, init?: JaFetchRequestInit): Promise<any>;
+    get(url: string, init?: JaFetchRequestInit): Promise<any>;
+    post(url: string, init?: JaFetchRequestInit): Promise<any>;
+    put(url: string, init?: JaFetchRequestInit): Promise<any>;
+    del(url: string, init?: JaFetchRequestInit): Promise<any>;
 }

@@ -3,57 +3,60 @@ import Interceptors from './interceptors';
 import { checkInterceptorsReturn } from './utils';
 
 export interface JaFetchRequestInit extends RequestInit {
+  /**基本url */
+  baseURL?: string;
   /**url请求参数 */
   params?: any;
   responseType?: 'text' | 'blob' | 'arraybuffer' | 'response';
 }
 
 export default class Service {
-  defaultConf: JaFetchRequestInit = {
+  defaultInit: JaFetchRequestInit = {
     headers: {},
   };
   interceptors = new Interceptors();
-  /**
-   * @param {object} defaultConf
-   */
-  constructor(defaultConf?: JaFetchRequestInit) {
-    this.defaultConf = Object.assign({}, this.defaultConf, defaultConf);
+
+  constructor(defaultInit?: JaFetchRequestInit) {
+    this.defaultInit = Object.assign({}, this.defaultInit, defaultInit);
   }
   /** create a new service */
-  create(config?: JaFetchRequestInit) {
-    return new Service(config);
+  create(init?: JaFetchRequestInit) {
+    return new Service(init);
   }
   /**
    * TODO: support Request
    * @param {string} url
-   * @param {object} config
+   * @param {JaFetchRequestInit} init
    */
-  private requestAdapter(url: string, config: JaFetchRequestInit) {
+  private requestAdapter(url: string, init: JaFetchRequestInit) {
     const reqInterceptor = this.interceptors.request; // 请求拦截器
     const resInterceptor = this.interceptors.response; // 响应拦截器
-    let assignedConf = Object.assign({}, this.defaultConf, config);
+    let assignedInit = Object.assign({}, this.defaultInit, init);
+
+    // 拼接baseURL
+    if (this.defaultInit.baseURL) url = this.defaultInit.baseURL + url;
 
     // 请求拦截器 multi
     if (reqInterceptor.store.length) {
-      if (!assignedConf.headers) assignedConf.headers = {}; // 没有headers就给一个空对象，便于拦截器中config.headers.xxx来使用
+      if (!assignedInit.headers) assignedInit.headers = {}; // 没有headers就给一个空对象，便于拦截器中config.headers.xxx来使用
       try {
         reqInterceptor.store.forEach(item => {
           // TODO: async await
-          const returnConf = item.onFulfilled(url, assignedConf); // 请求拦截器中修改请求配置
-          if (returnConf) assignedConf = returnConf; // 考虑使用拦截器的的时候直接修改形参option.来修改配置对象，且不返回的情况
+          const returnConf = item.onFulfilled(url, assignedInit); // 请求拦截器中修改请求配置
+          if (returnConf) assignedInit = returnConf; // 考虑使用拦截器的的时候直接修改形参option.来修改配置对象，且不返回的情况
         });
       } catch (err) {
         return Promise.reject(err);
       }
     }
 
-    const requestInfo = { url, init: assignedConf };
+    const requestInfo = { url, init: assignedInit };
 
     // return new Promise((resolve, reject) => {
-    return coreFetch(url, assignedConf).then(
+    return coreFetch(url, assignedInit).then(
       response => {
         if (response.ok) {
-          const responseType = assignedConf.responseType;
+          const { responseType } = assignedInit;
           let prom: Promise<any>;
           if (responseType === 'blob') prom = response.blob();
           else if (responseType === 'text') prom = response.text();
@@ -104,23 +107,23 @@ export default class Service {
     // })
   }
 
-  request(url: string, config: JaFetchRequestInit = {}) {
-    return this.requestAdapter(url, config);
+  request(url: string, init: JaFetchRequestInit = {}) {
+    return this.requestAdapter(url, init);
   }
-  get(url: string, config: JaFetchRequestInit = {}) {
-    config.method = 'GET';
-    return this.requestAdapter(url, config);
+  get(url: string, init: JaFetchRequestInit = {}) {
+    init.method = 'GET';
+    return this.requestAdapter(url, init);
   }
-  post(url: string, config: JaFetchRequestInit = {}) {
-    config.method = 'POST';
-    return this.requestAdapter(url, config);
+  post(url: string, init: JaFetchRequestInit = {}) {
+    init.method = 'POST';
+    return this.requestAdapter(url, init);
   }
-  put(url: string, config: JaFetchRequestInit = {}) {
-    config.method = 'PUT';
-    return this.requestAdapter(url, config);
+  put(url: string, init: JaFetchRequestInit = {}) {
+    init.method = 'PUT';
+    return this.requestAdapter(url, init);
   }
-  del(url: string, config: JaFetchRequestInit = {}) {
-    config.method = 'DELETE';
-    return this.requestAdapter(url, config);
+  del(url: string, init: JaFetchRequestInit = {}) {
+    init.method = 'DELETE';
+    return this.requestAdapter(url, init);
   }
 }
