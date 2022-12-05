@@ -1,24 +1,24 @@
 # ja-fetch
-A simple fetch wrapper (uglify:**3kb**)
-* Optimize fetch: get transfer parameters
-* Optimize fetch: Auto JSON.stringify post body
-* default return `response.json()` (Set `responseType` to change)
-* support interceptor
-* support cancel request interceptor preset
+A simple fetch wrapper, refer to some `axios API`. (parsed:**3KB**)
+* Optimize fetch: method `"get"`, set `params` to transfer parameters.
+* Optimize fetch: Auto JSON.stringify `post` body.
+* default return `response.json()`. (Set `responseType` to change)
+* support interceptor.
+* support cancel request interceptor preset.
 
-config extends [Fetch API(MDN)](https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API/Using_Fetch)
+RequestInit extends [Fetch API(MDN)](https://developer.mozilla.org/zh-CN/docs/Web/API/Fetch_API/Using_Fetch)
 
 ## TODO
 * getPendingPromiseList
 ## API
 ```javascript
 import http from 'ja-fetch';
-http.get(url, init);
-let service = http.create(init);
-service.interceptors.request.use(onFulfilled, onRejected);
-service.interceptors.response.use(onFulfilled, onRejected);
+http.get(url[, init]);
+let service = http.create([init]);
+service.interceptors.request.use(onFulfilled[, onRejected]);
+service.interceptors.response.use(onFulfilled[, onRejected]);
 service.interceptors.use(preset);
-service.get(url, init);
+service.get(url[, init]);
 ```
 ## Usage Demo
 ### Basic usage
@@ -34,7 +34,7 @@ http.get(url, {
     params: { type: "aa", data: "ddd" },
     mode: "cors",
     // credentials: 'include',
-    // responseType: 'text'
+    // responseType: 'text' | 'arraybuffer' | 'blob' | 'json' 
     // responseType: 'response' // return raw fetch Response Object
 })
 // post
@@ -68,7 +68,7 @@ const Service = http.create({
   mode: "cors",
     // baseURL: 'http://xxx',
     // credentials: 'include' // cookie
-    // responseType: 'text'
+    // responseType: 'text' | 'arraybuffer' | 'blob' | 'json' | 'response'
 });
 // request
 Service.interceptors.request.use(
@@ -96,6 +96,14 @@ Service.interceptors.response.use(
         return Promise.reject(err);
     }
 );
+
+// use interceptor
+service.interceptors.use({
+  install(interceptor){
+    interceptor.request.use(/*... */)
+    interceptor.response.use(/*... */)
+  }
+})
 ```
 ### Cancel Request Demo
 Use [AbortController(MDN)](https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController) to cancel request  (`Chrome >= 66`)
