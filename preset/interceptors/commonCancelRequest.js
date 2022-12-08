@@ -106,7 +106,7 @@ export default function commonCancelRequest(abortFilter, option) {
         if (cacheArr.length > option.gcCacheArrNum) {
           cacheArr = cacheArr.filter(Boolean); // 回收对象
         }
-        return isReject ? Promise.reject(`Reuqest: ${url} has been ignored.`) : data;
+        return isReject ? Promise.reject(`Request: ${url} has been ignored.`) : data;
       });
     },
   };

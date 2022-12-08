@@ -13,12 +13,12 @@ RequestInit extends [Fetch API(MDN)](https://developer.mozilla.org/zh-CN/docs/We
 ## API
 ```javascript
 import http from 'ja-fetch';
-http.get(url[, init]);
+http.get(url[, init]).then(data => {});
 let service = http.create([init]);
 service.interceptors.request.use(onFulfilled[, onRejected]);
 service.interceptors.response.use(onFulfilled[, onRejected]);
 service.interceptors.use(preset);
-service.get(url[, init]);
+service.get(url[, init]).then(data => {});
 ```
 ## Usage Demo
 ### Basic usage
@@ -64,14 +64,13 @@ http.del(url, {
 ### Interceptor demo
 ```javascript
 import http from "ja-fetch";
-const Service = http.create({
+const service = http.create({
   mode: "cors",
-    // baseURL: 'http://xxx',
-    // credentials: 'include' // cookie
-    // responseType: 'text' | 'arraybuffer' | 'blob' | 'json' | 'response'
+  baseURL: 'http://xxx.cn',
+  // credentials: 'include' // cookie
+  // responseType: 'text' | 'arraybuffer' | 'blob' | 'json' | 'response'
 });
-// request
-Service.interceptors.request.use(
+service.interceptors.request.use(
     (url, init) => {
         init.headers.userToken = "11111";
         return init;
@@ -81,8 +80,7 @@ Service.interceptors.request.use(
         return Promise.reject(err);
     }
 );
-// response
-Service.interceptors.response.use(
+service.interceptors.response.use(
     (data, { url, init }) => {
         if (data.code === 1) {
             console.log(data, init, "response interceptor: ok");
@@ -97,7 +95,9 @@ Service.interceptors.response.use(
     }
 );
 
-// use interceptor
+service.get('/getData',{param: {a:1}}).then(data => {...})
+
+// use other interceptor
 service.interceptors.use({
   install(interceptor){
     interceptor.request.use(/*... */)
