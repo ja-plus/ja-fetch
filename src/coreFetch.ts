@@ -8,17 +8,17 @@ import { createUrlParamStr } from './utils.js';
  * @returns {Promise<Response>}
  */
 export default function coreFetch(url: string, init: JaFetchRequestInit) {
-  const params = init.params;
   // 拼url参数
+  const params = init.params;
   if (params) url = createUrlParamStr(url, params);
 
-  if (init.body) {
-    // conf.body is object
-    if (!(init.body instanceof FormData) && typeof init.body === 'object') {
-      init.headers = {
-        'Content-Type': 'application/json',
-        ...(init.headers || {}),
-      };
+  // init.body is object
+  if (typeof init.body === 'object' && !(init.body instanceof FormData)) {
+    init.headers = {
+      'Content-Type': 'application/json',
+      ...(init.headers || {}),
+    };
+    if (!init.rawBody) {
       try {
         init.body = JSON.stringify(init.body);
       } catch (e) {

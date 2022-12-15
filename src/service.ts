@@ -3,6 +3,8 @@ import Interceptors from './interceptors';
 import { checkInterceptorsReturn } from './utils';
 
 export interface JaFetchRequestInit extends RequestInit {
+  /**not JSON.stringify(body) */
+  rawBody?: boolean;
   /**基本url */
   baseURL?: string;
   /**url请求参数 */

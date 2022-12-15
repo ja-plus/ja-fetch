@@ -1,5 +1,6 @@
 import Interceptors from './interceptors';
 export interface JaFetchRequestInit extends RequestInit {
+    rawBody?: boolean;
     baseURL?: string;
     params?: any;
     responseType?: 'text' | 'blob' | 'arraybuffer' | 'response';

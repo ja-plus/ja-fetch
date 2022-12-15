@@ -67,6 +67,7 @@ import http from "ja-fetch";
 const service = http.create({
   mode: "cors",
   baseURL: 'http://xxx.cn',
+  // rawBody: true, // Not auto JSON.stringify(body)
   // credentials: 'include' // cookie
   // responseType: 'text' | 'arraybuffer' | 'blob' | 'json' | 'response'
 });
