@@ -1,6 +1,6 @@
 ## 1.3.5
 add: service support `baseURL`
-add: init attr `rowBody` -> Not auto JSON.stringify(body)
+add: init attr `rawBody` -> Not auto JSON.stringify(body)
 ## 1.3.4
 update: `README.md`
 update: `package.json` main to ja-fetch.min.js
