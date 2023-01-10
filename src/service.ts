@@ -109,22 +109,22 @@ export default class Service {
     // })
   }
 
-  request(url: string, init: JaFetchRequestInit = {}) {
+  request<T>(url: string, init: JaFetchRequestInit = {}): Promise<T> {
     return this.requestAdapter(url, init);
   }
-  get(url: string, init: JaFetchRequestInit = {}) {
+  get<T>(url: string, init: JaFetchRequestInit = {}): Promise<T> {
     init.method = 'GET';
     return this.requestAdapter(url, init);
   }
-  post(url: string, init: JaFetchRequestInit = {}) {
+  post<T>(url: string, init: JaFetchRequestInit = {}): Promise<T> {
     init.method = 'POST';
     return this.requestAdapter(url, init);
   }
-  put(url: string, init: JaFetchRequestInit = {}) {
+  put<T>(url: string, init: JaFetchRequestInit = {}): Promise<T> {
     init.method = 'PUT';
     return this.requestAdapter(url, init);
   }
-  del(url: string, init: JaFetchRequestInit = {}) {
+  del<T>(url: string, init: JaFetchRequestInit = {}): Promise<T> {
     init.method = 'DELETE';
     return this.requestAdapter(url, init);
   }

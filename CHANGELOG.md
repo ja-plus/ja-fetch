@@ -1,3 +1,5 @@
+## 1.3.6
+add: jafetch.get/post/put/del/request<T> template
 ## 1.3.5
 add: service support `baseURL`
 add: init attr `rowBody` -> Not auto JSON.stringify(body)
