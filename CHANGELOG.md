@@ -1,8 +1,10 @@
 ## 1.3.6
 add: jafetch.get/post/put/del/request<T> template
+remove: build `tsc -d --declarationDir types --emitDeclarationOnly`
 ## 1.3.5
 add: service support `baseURL`
 add: init attr `rawBody` -> Not auto JSON.stringify(body)
+fix: interceptor.use `param`
 ## 1.3.4
 update: `README.md`
 update: `package.json` main to ja-fetch.min.js

@@ -10,6 +10,7 @@ export interface JaFetchRequestInit extends RequestInit {
   /**url请求参数 */
   params?: any;
   responseType?: 'text' | 'blob' | 'arraybuffer' | 'response';
+  body?: any | BodyInit;
 }
 
 export default class Service {

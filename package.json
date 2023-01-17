@@ -4,10 +4,10 @@
   "description": "3kb fetch-api wrapper",
   "main": "lib/ja-fetch.min.js",
   "source": "src/index.ts",
-  "types": "types/index.d.ts",
+  "types": "src/index.ts",
   "type": "module",
   "scripts": {
-    "bd": "rollup -c && tsc -d --declarationDir types --emitDeclarationOnly "
+    "bd": "rollup -c"
   },
   "files": [
     "src",
