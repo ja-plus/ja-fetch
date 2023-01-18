@@ -1,6 +1,7 @@
 ## 1.3.6
 add: jafetch.get/post/put/del/request<T> template
 remove: build `tsc -d --declarationDir types --emitDeclarationOnly`
+fix: preset type
 ## 1.3.5
 add: service support `baseURL`
 add: init attr `rawBody` -> Not auto JSON.stringify(body)
