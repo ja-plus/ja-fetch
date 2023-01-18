@@ -4,6 +4,7 @@
     "forceConsistentCasingInFileNames":true,//  强制区分文件名大小写
     "target": "ES2015",
     "module": "ES2015",
+    "strict": true,
     "noImplicitAny": true,
     "removeComments": true,
     "preserveConstEnums": true,

@@ -7,13 +7,13 @@ import { JaFetchRequestInit } from './service';
 type ReqOnFulfilled = (url: string, init: JaFetchRequestInit) => JaFetchRequestInit;
 type ResOnFulfilled = (data: any, request: { url: string; init: JaFetchRequestInit }, response: Response) => void;
 type OnRejected = (error?: any) => Promise<any>;
-type Store<T, U> = { id: number; onFulfilled: T; onRejected: U }[];
+type Store<T, U> = { id: number; onFulfilled: T; onRejected?: U }[];
 
 class Interceptor<T, U> {
   /**保存use方法中，传入的拦截方法 */
   store: Store<T, U> = [];
-  onFulfilled: T;
-  onRejected: U;
+  onFulfilled: T | undefined;
+  onRejected: U | undefined;
   /**
    * 添加拦截器方法
    * @param onFulfilled

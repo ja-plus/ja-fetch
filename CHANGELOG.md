@@ -1,3 +1,5 @@
+## 1.3.7
+* add: tsconfig `strict: true`
 ## 1.3.6
 add: jafetch.get/post/put/del/request<T> template
 remove: build `tsc -d --declarationDir types --emitDeclarationOnly`
