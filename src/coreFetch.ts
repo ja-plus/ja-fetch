@@ -22,7 +22,7 @@ export default function coreFetch(url: string, init: JaFetchRequestInit) {
       try {
         init.body = JSON.stringify(init.body);
       } catch (e) {
-        throw new Error('cannot stringify body json');
+        throw new Error("Can't stringify body");
       }
     }
   }

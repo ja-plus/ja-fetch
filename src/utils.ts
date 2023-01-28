@@ -8,7 +8,9 @@ export function createUrlParamStr(url: string, params: any) {
   const tmpUrl = new URL(url, window.location.origin); // 如果是url是相对路径，则会加上第二个参数
   for (const key in params) {
     if (Object.hasOwnProperty.call(params, key)) {
-      tmpUrl.searchParams.append(key, params[key]);
+      let val = params[key];
+      if (val === undefined) val = '';
+      tmpUrl.searchParams.append(key, val);
     }
   }
   return tmpUrl.href;

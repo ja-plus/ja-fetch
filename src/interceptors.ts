@@ -43,7 +43,7 @@ class Interceptor<T, U> {
     if (id) {
       this.store = this.store.filter(it => it.id === id);
     } else {
-      console.warn('Remove all Interceptor');
+      console.warn('Remove all interceptors');
       this.store = [];
     }
   }
