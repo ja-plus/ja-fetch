@@ -96,7 +96,7 @@ service.interceptors.response.use(
     }
 );
 
-service.get('/getData',{param: {a:1}}).then(data => {...})
+service.get('/getData',{ params: { a: 1 } }).then(data => {...})
 
 // use other interceptor
 service.interceptors.use({
@@ -164,7 +164,7 @@ fetchBtn.addEventListener('click', () => {
   let ServiceAB = http.create()
   ServiceAB.interceptors.use(commonCancelRequest()) // url === url && method === method
   // let a request not be canceled
-  ServiceAB.get(url, {param, notCancel: true})
+  ServiceAB.get(url, { params, notCancel: true })
 ```
 or custom cancel rule
 ```javascript
@@ -182,7 +182,7 @@ or custom cancel rule
     }),
 
     // let a request not be canceled
-    ServiceAB.get(url, {param, notCancel: true})
+    ServiceAB.get(url, {params, notCancel: true})
   )
 ```
 
