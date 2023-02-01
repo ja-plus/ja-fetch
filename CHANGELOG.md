@@ -1,3 +1,5 @@
+## 1.3.8
+* fix: type `JaFetchRequestInit` support custom key
 ## 1.3.7
 * add: tsconfig `strict: true`
 * fix: get params undefined

@@ -11,6 +11,8 @@ export interface JaFetchRequestInit extends RequestInit {
   params?: any;
   responseType?: 'text' | 'blob' | 'arraybuffer' | 'response';
   body?: any | BodyInit;
+  /**可在init中传任意自定义字段 */
+  [k: string]: any;
 }
 
 export default class Service {
