@@ -1,12 +1,15 @@
+import chalk from 'chalk';
 import Koa from 'koa';
 import koaBody from 'koa-body';
+import compress from 'koa-compress';
 import cors from 'koa-cors';
 import staticMid from 'koa-static';
-import compress from 'koa-compress';
-import chalk from 'chalk';
 import logger from './logger.js';
-
+import { dirname } from 'path';
+import { fileURLToPath } from 'url';
 import serverRouter from './router/serverRouter.js';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 const app = new Koa();
 
@@ -35,11 +38,11 @@ app.use(async (ctx, next) => {
   await next(); // 必须await
 });
 // 配置静态资源目录，放在后端路由前，优先获取静态自选
-// app.use(
-//   staticMid(__dirname + '/statics', {
-//     maxAge: 1000,
-//   }),
-// );
+app.use(
+  staticMid(__dirname + '/static', {
+    maxAge: 1000,
+  }),
+);
 app.use(compress()); // gzip br 压缩
 app.use(serverRouter.routes());
 
