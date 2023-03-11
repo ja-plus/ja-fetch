@@ -74,7 +74,8 @@ const service = http.create({
 service.interceptors.request.use(
     (url, init) => {
         init.headers.userToken = "11111";
-        return init;
+        return init; // support return Promise
+        
     },
     (err) => {
         console.log("request interceptor err:", err);
