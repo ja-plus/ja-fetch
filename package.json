@@ -7,7 +7,7 @@
   "type": "module",
   "scripts": {
     "bd": "rollup -c",
-    "declare": "tsc src/preset/interceptors/index.ts --declaration --declarationDir ./preset --emitDeclarationOnly"
+    "test:server": "node ./test/server/app.js"
   },
   "files": [
     "src",
@@ -32,10 +32,18 @@
     "@rollup/plugin-typescript": "^10.0.1",
     "@typescript-eslint/eslint-plugin": "^5.32.0",
     "@typescript-eslint/parser": "^5.32.0",
+    "chalk": "^4.1.2",
     "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",
     "eslint-plugin-html": "^7.1.0",
     "eslint-plugin-prettier": "^4.2.1",
+    "koa": "^2.13.1",
+    "koa-body": "^4.2.0",
+    "koa-compress": "^5.1.0",
+    "koa-cors": "0.0.16",
+    "koa-router": "^10.1.1",
+    "koa-static": "^5.0.0",
+    "log4js": "^6.3.0",
     "prettier": "^2.7.1",
     "rollup": "^3.5.1",
     "rollup-plugin-dts": "^5.2.0",
