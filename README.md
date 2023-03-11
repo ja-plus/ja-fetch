@@ -157,10 +157,17 @@ fetchBtn.addEventListener('click', () => {
     cacheArr = cacheArr.filter((item) => !item.canceled); // clean canceled cache
   });
 ```
+
+## Interceptor Presets
+| name | describe |
+| ---- | ---- |
+| commonCancelRequest | cancel last same request |
+| commonThrottleRequest | wait last same request return |
+| commonParallelRequest | parallel request |
 #### Use Cancel Request Preset
 ```javascript
   import http from 'ja-fetch'
-  import { commonCancelRequest, commonThrottleRequest } from 'ja-fetch/preset/interceptors'
+  import { commonCancelRequest, commonThrottleRequest, commonParallelRequest } from 'ja-fetch/preset/interceptors'
   let ServiceAB = http.create()
   ServiceAB.interceptors.use(commonCancelRequest()) // url === url && method === method
   // let a request not be canceled

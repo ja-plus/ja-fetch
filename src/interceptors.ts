@@ -1,8 +1,4 @@
-/**
- * @typedef {((data: any, {url: string, config: object}, response: Response) => Promise | (url: string, config: object) => object)} Fulfilled
- */
-
-import { JaFetchRequestInit } from './service';
+import type { JaFetchRequestInit } from './types';
 
 type ReqOnFulfilled = (url: string, init: JaFetchRequestInit) => JaFetchRequestInit;
 type ResOnFulfilled = (data: any, request: { url: string; init: JaFetchRequestInit }, response: Response) => void;

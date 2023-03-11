@@ -1,4 +1,4 @@
-import { JaFetchRequestInit } from './service.js';
+import type { JaFetchRequestInit } from './types.js';
 import { createUrlParamStr } from './utils.js';
 
 /**

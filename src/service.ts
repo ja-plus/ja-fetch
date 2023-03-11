@@ -1,19 +1,7 @@
 import coreFetch from './coreFetch';
 import Interceptors from './interceptors';
+import type { JaFetchRequestInit } from './types';
 import { checkInterceptorsReturn } from './utils';
-
-export interface JaFetchRequestInit extends RequestInit {
-  /**not JSON.stringify(body) */
-  rawBody?: boolean;
-  /**基本url */
-  baseURL?: string;
-  /**url请求参数 */
-  params?: any;
-  responseType?: 'text' | 'blob' | 'arraybuffer' | 'response';
-  body?: any | BodyInit;
-  /**可在init中传任意自定义字段 */
-  [k: string]: any;
-}
 
 export default class Service {
   defaultInit: JaFetchRequestInit = {
@@ -22,7 +10,7 @@ export default class Service {
   interceptors = new Interceptors();
 
   constructor(defaultInit?: JaFetchRequestInit) {
-    this.defaultInit = Object.assign({}, this.defaultInit, defaultInit);
+    this.defaultInit = Object.assign(this.defaultInit, defaultInit);
   }
   /** create a new service */
   create(init?: JaFetchRequestInit) {
@@ -33,7 +21,7 @@ export default class Service {
    * @param {string} url
    * @param {JaFetchRequestInit} init
    */
-  private requestAdapter(url: string, init: JaFetchRequestInit) {
+  private async requestAdapter(url: string, init: JaFetchRequestInit) {
     const reqInterceptor = this.interceptors.request; // 请求拦截器
     const resInterceptor = this.interceptors.response; // 响应拦截器
     let assignedInit = Object.assign({}, this.defaultInit, init);
@@ -45,11 +33,10 @@ export default class Service {
     if (reqInterceptor.store.length) {
       if (!assignedInit.headers) assignedInit.headers = {}; // 没有headers就给一个空对象，便于拦截器中config.headers.xxx来使用
       try {
-        reqInterceptor.store.forEach(item => {
-          // TODO: async await
-          const returnConf = item.onFulfilled(url, assignedInit); // 请求拦截器中修改请求配置
+        for (const item of reqInterceptor.store) {
+          const returnConf = await item.onFulfilled(url, assignedInit); // 请求拦截器中修改请求配置
           if (returnConf) assignedInit = returnConf; // 考虑使用拦截器的的时候直接修改形参option.来修改配置对象，且不返回的情况
-        });
+        }
       } catch (err) {
         return Promise.reject(err);
       }
@@ -80,7 +67,6 @@ export default class Service {
               err => (item.onRejected ? item.onRejected(err).then((res: any) => checkInterceptorsReturn(res, 'response', err)) : Promise.reject(err)),
             );
           });
-          // prom = prom.then(resolve).catch(reject)
 
           return prom;
         } else {

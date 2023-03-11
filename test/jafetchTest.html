@@ -14,6 +14,7 @@
     <div id="interceptorAbortController">test interceptor AbortController</div>
     <div id="commonCancelRequest">test interceptor commonCancelRequest</div>
     <div id="commonThrottleRequest">test interceptor commonThrottleRequest</div>
+    <div id="commonParallelRequest">test interceptor commonParallelRequest</div>
   </div>
 </body>
 <script type="module">
@@ -355,7 +356,7 @@
 <script type="module">
   /* test interceptor commonCancelRequest*/
   import jafetch from '../lib/ja-fetch.js';
-  import { commonCancelRequest } from '../preset/interceptors/index.js';
+  import { commonCancelRequest } from '../preset/interceptors.js';
   import h from './h.js';
   let ServiceAB = jafetch.create();
   ServiceAB.interceptors.use(
@@ -390,7 +391,7 @@
 <script type="module">
   /* test interceptor throttle */
   import jafetch from '../lib/ja-fetch.js';
-  import { commonThrottleRequest } from '../preset/interceptors/index.js';
+  import { commonThrottleRequest } from '../preset/interceptors.js';
   import h from './h.js';
   let ServiceAB = jafetch.create();
   ServiceAB.interceptors.use(commonThrottleRequest(null, { notInterceptKey: '__not_throttle__' }));
@@ -413,6 +414,31 @@
       .catch(err => {
         console.warn('commonThrottleRequest fetch 请求失败：', err);
       });
+  });
+</script>
+<script type="module">
+  import http from '../lib/ja-fetch.js';
+  import { commonParallelRequest } from '../preset/interceptors.js';
+  import h from './h.js';
+  let serviceParallel = http.create();
+  serviceParallel.interceptors.use(commonParallelRequest({ limit: 2 }));
+
+  const parallelFetchBtn = h('button', 'parallelFetch');
+  document.querySelector('#commonParallelRequest').append(parallelFetchBtn);
+  parallelFetchBtn.addEventListener('click', () => {
+    console.log('commonParallelRequest 发起5个请求');
+    for (let i = 0; i < 5; i++) {
+      serviceParallel
+        .get('http://localhost:8080/timeoutTestData', {
+          params: { timeout: 5000 - i * 1000, q: i },
+        })
+        .then(response => {
+          console.log('commonParallelRequest fetch response :>>', response);
+        })
+        .catch(err => {
+          console.warn('commonParallelRequest fetch 请求失败：', err);
+        });
+    }
   });
 </script>
 <script type="module">
