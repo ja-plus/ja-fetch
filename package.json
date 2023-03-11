@@ -6,13 +6,13 @@
   "types": "src/index.ts",
   "type": "module",
   "scripts": {
-    "bd": "rollup -c"
+    "bd": "rollup -c",
+    "declare": "tsc src/preset/interceptors/index.ts --declaration --declarationDir ./preset --emitDeclarationOnly"
   },
   "files": [
     "src",
     "lib",
-    "preset",
-    "types"
+    "preset"
   ],
   "repository": {
     "type": "git",
@@ -38,6 +38,7 @@
     "eslint-plugin-prettier": "^4.2.1",
     "prettier": "^2.7.1",
     "rollup": "^3.5.1",
+    "rollup-plugin-dts": "^5.2.0",
     "typescript": "^4.7.3"
   }
 }

@@ -32,4 +32,13 @@ declare module 'ja-fetch/preset/interceptors' {
     throttleFilter?: FilterFunc | null,
     option?: Pick<DefaultOption, 'notInterceptKey'>,
   ): { install: (interceptors: any) => any };
+
+  type Option = {
+    /**parallel size */
+    limit?: number;
+  };
+  /**请求并行队列 */
+  export function commonParallelRequest(option?: Option): {
+    install(interceptors: Interceptors): void;
+  };
 }

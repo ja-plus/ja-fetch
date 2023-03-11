@@ -222,7 +222,7 @@ function commonThrottleRequest(throttleFilter, option) {
 }
 
 /**请求并行队列 */
-function parallelTask(option = {}) {
+function commonParallelRequest(option = {}) {
     const { limit = 5 } = option;
     let taskCount = 0;
     const taskList = [];
@@ -259,5 +259,5 @@ function parallelTask(option = {}) {
     };
 }
 
-export { commonCancelRequest, parallelTask as commonParallelRequest, commonThrottleRequest };
+export { commonCancelRequest, commonParallelRequest, commonThrottleRequest };
 //# sourceMappingURL=interceptors.js.map

@@ -7,7 +7,7 @@ type Option = {
   limit?: number;
 };
 /**请求并行队列 */
-export default function parallelTask(option: Option = {}) {
+export default function commonParallelRequest(option: Option = {}) {
   const { limit = 5 } = option;
 
   let taskCount = 0;
