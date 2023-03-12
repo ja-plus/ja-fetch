@@ -1,7 +1,7 @@
 {
   "name": "ja-fetch",
   "version": "1.4.0",
-  "description": "3kb fetch-api wrapper",
+  "description": "4kb fetch-api wrapper",
   "main": "lib/ja-fetch.min.js",
   "types": "src/index.ts",
   "type": "module",
