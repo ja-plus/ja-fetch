@@ -47,6 +47,7 @@ export default class Service {
     // return new Promise((resolve, reject) => {
     return coreFetch(url, assignedInit).then(
       response => {
+        const errObj = { response, ...requestInfo };
         if (response.ok) {
           const { responseType } = assignedInit;
           let prom: Promise<any>;
@@ -61,17 +62,20 @@ export default class Service {
            * 添加响应拦截器
            * 第一个拦截器中onFulfilled中的异常由下一个拦截器的onRejected处理
            */
-          resInterceptor.store.forEach(item => {
+          resInterceptor.store.forEach((item, i) => {
             prom = prom.then(
               data => item.onFulfilled(data, requestInfo, response), // 可能要把response对象传给拦截器使用
-              err => (item.onRejected ? item.onRejected(err).then((res: any) => checkInterceptorsReturn(res, 'response', err)) : Promise.reject(err)),
+              err => {
+                err = { err, ...errObj };
+                return item.onRejected ? item.onRejected(err).then((res: any) => checkInterceptorsReturn(res, 'response', err)) : Promise.reject(err);
+              },
             );
           });
 
           return prom;
         } else {
           // -------------响应错误
-          const errObj = { response, ...requestInfo };
+
           // 错误交给拦截器处理
           let resInterceptorRejectPromise: Promise<any> = Promise.reject(errObj);
           resInterceptor.store.forEach(item => {

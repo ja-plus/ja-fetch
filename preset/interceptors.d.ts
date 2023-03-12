@@ -96,13 +96,22 @@ type RequestInfo = {
 };
 type FilterFunc = (currentConfig: RequestInfo, storedConfig: RequestInfo) => boolean;
 
-type Option = {
+type Option$1 = {
     /**parallel size */
     limit?: number;
 };
 /**请求并行队列 */
-declare function commonParallelRequest(option?: Option): {
+declare function commonParallelRequest(option?: Option$1): {
     install(interceptors: Interceptors): void;
 };
 
-export { commonCancelRequest, commonParallelRequest, commonThrottleRequest };
+type Option = {
+    /**parallel size */
+    ms?: number;
+};
+/**超时 */
+declare function commonTimeoutRequest(option?: Option): {
+    install(interceptors: Interceptors): void;
+};
+
+export { commonCancelRequest, commonParallelRequest, commonThrottleRequest, commonTimeoutRequest };

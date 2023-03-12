@@ -2,7 +2,8 @@ import type { JaFetchRequestInit } from './types';
 
 type ReqOnFulfilled = (url: string, init: JaFetchRequestInit) => JaFetchRequestInit;
 type ResOnFulfilled = (data: any, request: { url: string; init: JaFetchRequestInit }, response: Response) => void;
-type OnRejected = (error?: any) => Promise<any>;
+type ReqOnRejected = (error?: { err?: any; url: string; init: JaFetchRequestInit }) => Promise<any>;
+type ResOnRejected = (error: { err?: any; response?: Response; url: string; init: JaFetchRequestInit }) => Promise<any>;
 type Store<T, U> = { id: number; onFulfilled: T; onRejected?: U }[];
 
 class Interceptor<T, U> {
@@ -45,8 +46,8 @@ class Interceptor<T, U> {
   }
 }
 export default class Interceptors {
-  request = new Interceptor<ReqOnFulfilled, OnRejected>();
-  response = new Interceptor<ResOnFulfilled, OnRejected>();
+  request = new Interceptor<ReqOnFulfilled, ReqOnRejected>();
+  response = new Interceptor<ResOnFulfilled, ResOnRejected>();
 
   create() {
     return new Interceptors();

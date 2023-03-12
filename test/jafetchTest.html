@@ -15,6 +15,7 @@
     <div id="commonCancelRequest">test interceptor commonCancelRequest</div>
     <div id="commonThrottleRequest">test interceptor commonThrottleRequest</div>
     <div id="commonParallelRequest">test interceptor commonParallelRequest</div>
+    <div id="commonTimeoutRequest">test interceptor commonTimeoutRequest</div>
   </div>
 </body>
 <script type="module">
@@ -113,9 +114,9 @@
   );
 
   Service.interceptors.response.use(
-    (data, { config }) => {
+    (data, { init }) => {
       if (data.code === 1) {
-        console.log(data, config, 'response interceptor: ok');
+        console.log(data, init, 'response interceptor: ok');
         document.body.append(h('p', 'response interceptor: ok,' + JSON.stringify(data)));
         return data;
       } else {
@@ -127,8 +128,6 @@
       return Promise.reject(err);
     },
   );
-
-  /**这个get方法返回的值，会被下面加的拦截器拦截*/
   Service.get('http://localhost:8080/getTestData', {
     params: { type: 'aa' },
     mode: 'cors',
@@ -146,22 +145,6 @@
   /** remove interceptor*/
   // Service.interceptors.response.remove();
 
-  // Service.interceptors.response.use(
-  //   (data, { config }, response) => {
-  //     console.log('interceptor:', config, response);
-  //     if (data.code === 0) {
-  //       console.log(data, 'interceptor: ok');
-  //       ddocument.body.append(h('p', 'interceptor: ok,' + JSON.stringify(data) ));
-  //       return data;
-  //     } else {
-  //       return Promise.reject('response.data.code is ' + data.code);
-  //     }
-  //   },
-  //   (err, conf) => {
-  //     console.log('onRejectedInterceptor', err, conf);
-  //     return Promise.reject(err);
-  //   },
-  // );
   Service.post('http://localhost:8080/postTestData', {
     params: { type: 'post param' },
     headers: {
@@ -314,9 +297,10 @@
 
   /**响应拦截器*/
   Service.interceptors.response.use(
-    data => {
-      console.log('response multi interceptor1 data:', data);
+    (data, conf) => {
+      console.log('response multi interceptor1 data:', data, conf);
       data.addKey1 = 2;
+      data.a.a; // throw error
       return data;
       // return Promise.reject('aaa');
     },
@@ -439,6 +423,28 @@
           console.warn('commonParallelRequest fetch 请求失败：', err);
         });
     }
+  });
+</script>
+<script type="module">
+  import http from '../lib/ja-fetch.js';
+  import { commonTimeoutRequest } from '../preset/interceptors.js';
+  import h from './h.js';
+  let serviceTimeout = http.create();
+  serviceTimeout.interceptors.use(commonTimeoutRequest({ ms: 3000 }));
+
+  const timeoutFetchBtn = h('button', 'timeoutFetch');
+  document.querySelector('#commonTimeoutRequest').append(timeoutFetchBtn);
+  timeoutFetchBtn.addEventListener('click', () => {
+    serviceTimeout
+      .get('http://localhost:8080/timeoutTestData', {
+        params: { timeout: 5000 },
+      })
+      .then(response => {
+        console.log('commonTimeoutRequest fetch response :>>', response);
+      })
+      .catch(err => {
+        console.warn('commonTimeoutRequest fetch 请求失败：', err);
+      });
   });
 </script>
 <script type="module">

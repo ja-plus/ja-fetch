@@ -10,6 +10,7 @@ RequestInit extends [Fetch API(MDN)](https://developer.mozilla.org/zh-CN/docs/We
 
 ## TODO
 * getPendingPromiseList
+* support `Request` obj
 ## API
 ```javascript
 import http from 'ja-fetch';

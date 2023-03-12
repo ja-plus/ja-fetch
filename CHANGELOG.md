@@ -1,7 +1,8 @@
 ## 1.4.0
 * change: `preset/interceptors/index` => `preset/interceptors.js`
-* add: `commonParallelRequest`
+* add: `commonParallelRequest`, `commonTimeoutRequest`
 * feat: interceptors.request.use callback support promise
+* fix: interceptors reject err obj.
 ## 1.3.8
 * fix: type `JaFetchRequestInit` support custom key
 ## 1.3.7
