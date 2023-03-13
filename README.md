@@ -76,25 +76,23 @@ service.interceptors.request.use(
     (url, init) => {
         init.headers.userToken = "11111";
         return init; // support return Promise
-        
     },
-    (err) => {
+    (err, {url, init}) => {
         console.log("request interceptor err:", err);
         return Promise.reject(err);
     }
 );
 service.interceptors.response.use(
-    (data, { url, init }) => {
+    (data, { url, init }, response) => {
         if (data.code === 1) {
-            console.log(data, init, "response interceptor: ok");
-            return data;
+            return data; // You MUST return data;
         } else {
             return Promise.reject("response.data.code is " + data.code);
         }
     },
-    (err) => {
+    (err, { url, init }, response) => {
         console.log("response interceptor err:", err);
-        return Promise.reject(err);
+        return Promise.reject(err); // Promise.resolve('data')
     }
 );
 
@@ -161,19 +159,19 @@ fetchBtn.addEventListener('click', () => {
 ```
 
 ## Interceptor Presets
-| name | describe |
+| function | describe |
 | ---- | ---- |
 | commonCancelRequest | cancel last same request |
 | commonThrottleRequest | wait last same request return |
 | commonParallelRequest | parallel request |
+| commonTimeoutRequest(option:{ms:number}) | request cancel when timeout |
 #### Use Cancel Request Preset
 ```javascript
   import http from 'ja-fetch'
-  import { commonCancelRequest, commonThrottleRequest, commonParallelRequest } from 'ja-fetch/preset/interceptors'
+  import { commonCancelRequest, commonThrottleRequest, commonParallelRequest, commonTimeoutRequest } from 'ja-fetch/preset/interceptors.js'
   let ServiceAB = http.create()
   ServiceAB.interceptors.use(commonCancelRequest()) // url === url && method === method
-  // let a request not be canceled
-  ServiceAB.get(url, { params, notCancel: true })
+  ServiceAB.get(url, { params, notCancel: true })  // let a request not be canceled
 ```
 or custom cancel rule
 ```javascript

@@ -10,3 +10,8 @@ export interface JaFetchRequestInit extends RequestInit {
   /**可在init中传任意自定义字段 */
   [k: string]: any;
 }
+
+export type JaRequestInfo = {
+  url: string;
+  init: JaFetchRequestInit;
+};

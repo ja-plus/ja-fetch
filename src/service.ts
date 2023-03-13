@@ -1,6 +1,6 @@
 import coreFetch from './coreFetch';
 import Interceptors from './interceptors';
-import type { JaFetchRequestInit } from './types';
+import type { JaFetchRequestInit, JaRequestInfo } from './types';
 import { checkInterceptorsReturn } from './utils';
 
 export default class Service {
@@ -22,32 +22,24 @@ export default class Service {
    * @param {JaFetchRequestInit} init
    */
   private async requestAdapter(url: string, init: JaFetchRequestInit) {
-    const reqInterceptor = this.interceptors.request; // 请求拦截器
-    const resInterceptor = this.interceptors.response; // 响应拦截器
+    const reqInterceptor = this.interceptors.request;
+    const resInterceptor = this.interceptors.response;
     let assignedInit = Object.assign({}, this.defaultInit, init);
 
-    // 拼接baseURL
     if (this.defaultInit.baseURL) url = this.defaultInit.baseURL + url;
 
-    // 请求拦截器 multi
+    // request interceptor
     if (reqInterceptor.store.length) {
-      if (!assignedInit.headers) assignedInit.headers = {}; // 没有headers就给一个空对象，便于拦截器中config.headers.xxx来使用
-      try {
-        for (const item of reqInterceptor.store) {
-          const returnConf = await item.onFulfilled(url, assignedInit); // 请求拦截器中修改请求配置
-          if (returnConf) assignedInit = returnConf; // 考虑使用拦截器的的时候直接修改形参option.来修改配置对象，且不返回的情况
-        }
-      } catch (err) {
-        return Promise.reject(err);
+      if (!assignedInit.headers) assignedInit.headers = {}; //便于 init.headers.xxx
+      for (const item of reqInterceptor.store) {
+        assignedInit = await item.onFulfilled(url, assignedInit);
       }
     }
 
-    const requestInfo = { url, init: assignedInit };
+    const requestInfo: JaRequestInfo = { url, init: assignedInit };
 
-    // return new Promise((resolve, reject) => {
     return coreFetch(url, assignedInit).then(
       response => {
-        const errObj = { response, ...requestInfo };
         if (response.ok) {
           const { responseType } = assignedInit;
           let prom: Promise<any>;
@@ -55,51 +47,45 @@ export default class Service {
           else if (responseType === 'text') prom = response.text();
           else if (responseType === 'arraybuffer') prom = response.arrayBuffer();
           else if (responseType === 'response') prom = Promise.resolve(response);
-          // response.body
           else prom = response.json();
 
           /**
-           * 添加响应拦截器
+           * response interceptor
            * 第一个拦截器中onFulfilled中的异常由下一个拦截器的onRejected处理
            */
-          resInterceptor.store.forEach((item, i) => {
+          resInterceptor.store.forEach(item => {
             prom = prom.then(
-              data => item.onFulfilled(data, requestInfo, response), // 可能要把response对象传给拦截器使用
-              err => {
-                err = { err, ...errObj };
-                return item.onRejected ? item.onRejected(err).then((res: any) => checkInterceptorsReturn(res, 'response', err)) : Promise.reject(err);
-              },
+              data => item.onFulfilled(data, requestInfo, response),
+              err =>
+                item.onRejected
+                  ? item.onRejected(err, requestInfo, response).then((res: any) => checkInterceptorsReturn(res, 1))
+                  : Promise.reject(err),
             );
           });
 
           return prom;
         } else {
-          // -------------响应错误
-
-          // 错误交给拦截器处理
-          let resInterceptorRejectPromise: Promise<any> = Promise.reject(errObj);
+          // ------------ response interceptor
+          let resInterceptorRejectPromise: Promise<any> = Promise.reject(response);
           resInterceptor.store.forEach(item => {
             resInterceptorRejectPromise = resInterceptorRejectPromise
-              .catch(err => (item.onRejected ? item.onRejected(err) : Promise.reject(err)))
-              .then(res => checkInterceptorsReturn(res, 'response', errObj));
+              .catch(err => (item.onRejected ? item.onRejected(err, requestInfo, response) : Promise.reject(err)))
+              .then(res => checkInterceptorsReturn(res, 1));
           });
           return resInterceptorRejectPromise;
         }
       },
       err => {
-        // -------------请求错误,(浏览器阻止请求)
-        const errObj = { err, ...requestInfo };
-        // 构建catch链
-        let reqInterceptorRejectPromise: Promise<any> = Promise.reject(errObj);
+        // ------------ request interceptor (浏览器阻止请求)
+        let reqInterceptorRejectPromise: Promise<any> = Promise.reject(err);
         reqInterceptor.store.forEach(item => {
           reqInterceptorRejectPromise = reqInterceptorRejectPromise
-            .catch(err => (item.onRejected ? item.onRejected(err) : Promise.reject(err)))
-            .then(res => checkInterceptorsReturn(res, 'request', errObj));
+            .catch(err => (item.onRejected ? item.onRejected(err, requestInfo) : Promise.reject(err)))
+            .then(res => checkInterceptorsReturn(res, 0));
         });
         return reqInterceptorRejectPromise;
       },
     );
-    // })
   }
 
   request<T>(url: string, init: JaFetchRequestInit = {}): Promise<T> {

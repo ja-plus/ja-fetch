@@ -3,6 +3,8 @@
 * add: `commonParallelRequest`, `commonTimeoutRequest`
 * feat: interceptors.request.use callback support promise
 * fix: interceptors reject err obj.
+* add: request interceptor onReject param `requestConfig:{url:string,init:JaFetchRequestInit}`
+* add: response interceptor onReject param `requestConfig:{url:string,init:JaFetchRequestInit}, response:Response`
 ## 1.3.8
 * fix: type `JaFetchRequestInit` support custom key
 ## 1.3.7

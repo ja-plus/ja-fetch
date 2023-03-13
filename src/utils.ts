@@ -1,11 +1,11 @@
 /**
  * 拼接url参数
- * @param {string} url url字符串
- * @param {Object} params url参数对象
+ * @param {string} url
+ * @param {Object} params url param object
  * @returns {string}
  */
 export function createUrlParamStr(url: string, params: any) {
-  const tmpUrl = new URL(url, window.location.origin); // 如果是url是相对路径，则会加上第二个参数
+  const tmpUrl = new URL(url, window.location.origin);
   for (const key in params) {
     if (Object.hasOwnProperty.call(params, key)) {
       let val = params[key];
@@ -16,19 +16,22 @@ export function createUrlParamStr(url: string, params: any) {
   return tmpUrl.href;
 }
 
+const enum Type {
+  request = 0,
+  response = 1,
+}
 /**
- * 检查interceptors onRejected 方法的返回
+ * check interceptors onRejected function's return
  * @param {any} rejectedFuncReturn
- * @param {'request' | 'response'} type
- * @param {object} errObj
+ * @param {Type} type
  * @returns
  */
-export function checkInterceptorsReturn(rejectedFuncReturn: any, type: 'request' | 'response', errObj: any) {
-  // 校验onRejected 的返回值，希望onRejected 函数必须返回一个Promise
+export function checkInterceptorsReturn(rejectedFuncReturn: any, type: Type) {
   if (rejectedFuncReturn instanceof Promise) {
     return rejectedFuncReturn;
   } else {
-    console.warn(`${type}.interceptor.use(onFulfilled, onRejected): onRejected not return Promise.`);
-    return Promise.reject(errObj);
+    // if not Promise, show warn
+    console.warn(`${type === 0 ? 'request' : 'response'}.interceptor.use(onFulfilled, onRejected): onRejected not return Promise.`);
+    return Promise.reject(rejectedFuncReturn);
   }
 }

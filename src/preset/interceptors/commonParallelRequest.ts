@@ -1,7 +1,7 @@
 import type Interceptors from '@/interceptors';
 import type { JaFetchRequestInit } from '@/types';
 
-type TaskCache = { url: string; init: JaFetchRequestInit; resolve: (value: unknown) => void; reject: (value: unknown) => void };
+type TaskCache = { url: string; init: JaFetchRequestInit; resolve: (init: JaFetchRequestInit) => void };
 type Option = {
   /**parallel size */
   limit?: number;
@@ -29,8 +29,8 @@ export default function commonParallelRequest(option: Option = {}) {
           return init;
         }
         // add to task queue
-        return new Promise((resolve, reject) => {
-          const request = { url, init, resolve, reject };
+        return new Promise(resolve => {
+          const request = { url, init, resolve };
           taskList.push(request);
         });
       });

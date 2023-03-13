@@ -243,8 +243,8 @@ function commonParallelRequest(option = {}) {
                     return init;
                 }
                 // add to task queue
-                return new Promise((resolve, reject) => {
-                    const request = { url, init, resolve, reject };
+                return new Promise(resolve => {
+                    const request = { url, init, resolve };
                     taskList.push(request);
                 });
             });

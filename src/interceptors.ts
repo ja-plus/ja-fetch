@@ -1,9 +1,9 @@
-import type { JaFetchRequestInit } from './types';
+import type { JaFetchRequestInit, JaRequestInfo } from './types';
 
-type ReqOnFulfilled = (url: string, init: JaFetchRequestInit) => JaFetchRequestInit;
-type ResOnFulfilled = (data: any, request: { url: string; init: JaFetchRequestInit }, response: Response) => void;
-type ReqOnRejected = (error?: { err?: any; url: string; init: JaFetchRequestInit }) => Promise<any>;
-type ResOnRejected = (error: { err?: any; response?: Response; url: string; init: JaFetchRequestInit }) => Promise<any>;
+type ReqOnFulfilled = (url: string, init: JaFetchRequestInit) => JaFetchRequestInit | Promise<JaFetchRequestInit>;
+type ResOnFulfilled = (data: any, requestInfo: JaRequestInfo, response: Response) => void;
+type ReqOnRejected = (error: any, requestInfo: JaRequestInfo) => Promise<any>;
+type ResOnRejected = (error: any, requestInfo: JaRequestInfo, response: Response) => Promise<any>;
 type Store<T, U> = { id: number; onFulfilled: T; onRejected?: U }[];
 
 class Interceptor<T, U> {
