@@ -1,18 +1,15 @@
 /**
- * @typedef {import('../../src/interceptors').default} Interceptors
- */
-/**
+ * @typedef {import('../../interceptors').default} Interceptors
+ * ---
  * @typedef CommonThrottleOption
  * @property {string} notInterceptKey
- */
-/**
+ * ---
  * @typedef RequestInfo
  * @property {string} url
  * @property {RequestInit} init
  * @property {number} requestId private param
  * @property {AbortController} [_controller] private param
- */
-/**
+ * ---
  * @callback FilterFunc
  * @param {RequestInfo} currentConfig
  * @param {RequestInfo} storedConfig
@@ -27,10 +24,12 @@
  * @return {{install(interceptors:Interceptors):void}}
  */
 export default function commonThrottleRequest(throttleFilter, option) {
-  const defaultOption = {
-    notInterceptKey: 'notThrottle',
-  };
-  option = Object.assign({}, defaultOption, option);
+  const assignedOption = Object.assign(
+    {
+      notInterceptKey: 'notThrottle',
+    },
+    option,
+  );
   if (!throttleFilter && typeof throttleFilter !== 'function') {
     throttleFilter = (currentConfig, storedConfig) =>
       currentConfig.url === storedConfig.url && currentConfig.init.method === storedConfig.init.method;
@@ -39,8 +38,9 @@ export default function commonThrottleRequest(throttleFilter, option) {
   return {
     install(interceptors) {
       let requestId = 1;
-      /** @type {RequestInfo[]} 保存*/
+      /** @type {(RequestInfo | null)[]} 保存*/
       let cacheArr = [];
+      /**@type {(init:any) => void} */
       let cacheArr_clean = init => {
         // 请求已返回则移除保存
         for (let i = 0; i < cacheArr.length; i++) {
@@ -55,14 +55,8 @@ export default function commonThrottleRequest(throttleFilter, option) {
       };
 
       interceptors.request.use(
-        /**
-         * request onFullfilled
-         * @param {string} url
-         * @param {RequestInit} init will pass to fetch
-         * @returns
-         */
         (url, init) => {
-          if (init[option.notInterceptKey]) return init;
+          if (init[assignedOption.notInterceptKey]) return init;
           requestId++;
           const storeObj = { requestId, url, init };
           init._commonThrottleRequest = { requestId };
@@ -76,7 +70,7 @@ export default function commonThrottleRequest(throttleFilter, option) {
               emptyIndex = i;
               continue;
             }
-            if (throttleFilter({ url, init }, storedConfig)) {
+            if (throttleFilter({ url, init, requestId }, storedConfig)) {
               hasRequestStored = true;
               throw new Error('commonThrottleRequest: The request has been send but not received.Request has been ignore');
             }
