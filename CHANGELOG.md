@@ -1,3 +1,5 @@
+## 1.4.1
+* change: `get` set param `undefined` will be ignored
 ## 1.4.0
 * change: `preset/interceptors/index` => `preset/interceptors.js`
 * add: `commonParallelRequest`, `commonTimeoutRequest`

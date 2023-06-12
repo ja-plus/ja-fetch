@@ -8,8 +8,8 @@ export function createUrlParamStr(url: string, params: any) {
   const tmpUrl = new URL(url, window.location.origin);
   for (const key in params) {
     if (Object.hasOwnProperty.call(params, key)) {
-      let val = params[key];
-      if (val === undefined) val = '';
+      const val = params[key];
+      if (val === undefined || val === null) continue;
       tmpUrl.searchParams.append(key, val);
     }
   }

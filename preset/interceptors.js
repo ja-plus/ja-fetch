@@ -1,19 +1,17 @@
 /**
- * @typedef {import('../../src/interceptors').default} Interceptors
- */
-/**
+ * @typedef {import('../../interceptors').default} Interceptors
+ * ---
  * @typedef CommonCancelOption
  * @property {string} notInterceptKey
- * @property {number} [gcCacheArrNum=20]
- */
-/**
+ * @property {number} gcCacheArrNum
+ * ---
  * @typedef RequestInfo
  * @property {string} url
  * @property {RequestInit} init
  * @property {number} requestId private param
+ * @property {boolean} [canceled]
  * @property {AbortController} [_controller] private param
- */
-/**
+ * ---
  * @callback FilterFunc
  * @param {RequestInfo} currentConfig
  * @param {RequestInfo} storedConfig
@@ -23,17 +21,19 @@
 /**
  * 用AbortController 取消之前发起的相同的请求
  * set config.notCancel = true 时则不拦截
- * @param {FilterFunc} [abortFilter] default: url === url, method === method
+ * @param {FilterFunc} abortFilter default: url === url, method === method
  * @param {CommonCancelOption} [option]
  * @return {{install(interceptors:Interceptors):void}}
  */
 function commonCancelRequest(abortFilter, option) {
   /** @type {CommonCancelOption} */
-  const defaultOption = {
-    notInterceptKey: 'notCancel',
-    gcCacheArrNum: 20,
-  };
-  option = Object.assign({}, defaultOption, option || {});
+  const assignedOption = Object.assign(
+    {
+      notInterceptKey: 'notCancel',
+      gcCacheArrNum: 20,
+    },
+    option || {},
+  );
 
   if (!abortFilter && typeof abortFilter !== 'function') {
     abortFilter = (currentConfig, storedConfig) => currentConfig.url === storedConfig.url && currentConfig.init.method === storedConfig.init.method;
@@ -41,56 +41,49 @@ function commonCancelRequest(abortFilter, option) {
 
   return {
     install(interceptors) {
-      /** @type {RequestInfo[]} */
+      /** @type {(RequestInfo | null)[]} */
       let cacheArr = [];
       let requestId = 1;
-      interceptors.request.use(
-        /**
-         * request onFullfilled
-         * @param {string} url
-         * @param {RequestInit} init will pass to fetch
-         * @returns
-         */
-        (url, init) => {
-          if (init[option.notInterceptKey]) return init;
-          requestId++;
 
-          let hasPendingRequest = false;
-          /**@type {RequestInfo} */
-          let storedObj = { url, init, requestId };
+      interceptors.request.use((url, init) => {
+        if (init[assignedOption.notInterceptKey]) return init;
+        requestId++;
 
-          init._commonCancelRequest = { requestId };
+        let hasPendingRequest = false;
+        /**@type {RequestInfo} */
+        let storedObj = { url, init, requestId };
 
-          if (window.AbortController) {
-            const abController = new AbortController();
-            init.signal = abController.signal;
-            storedObj._controller = abController;
-          } else {
-            init._commonCancelRequest.canceled = false;
-          }
-          // check if has pending request
-          for (let i = 0; i < cacheArr.length; i++) {
-            const storedConfig = cacheArr[i];
-            if (!storedConfig) continue;
-            if (abortFilter({ url, init }, storedConfig)) {
-              if (window.AbortController) {
-                hasPendingRequest = true; // not push to cache
-                storedConfig._controller?.abort(); // abort request
-                cacheArr[i] = storedObj; // replace old cahce with new
-              } else {
-                // sign as cancelled，deal in response
-                storedConfig.canceled = true;
-              }
+        init._commonCancelRequest = { requestId };
+
+        if (window.AbortController) {
+          const abController = new AbortController();
+          init.signal = abController.signal;
+          storedObj._controller = abController;
+        } else {
+          init._commonCancelRequest.canceled = false;
+        }
+        // check if has pending request
+        for (let i = 0; i < cacheArr.length; i++) {
+          const storedConfig = cacheArr[i];
+          if (!storedConfig) continue;
+          if (abortFilter({ url, init, requestId }, storedConfig)) {
+            if (window.AbortController) {
+              hasPendingRequest = true; // not push to cache
+              storedConfig._controller?.abort(); // abort request
+              cacheArr[i] = storedObj; // replace old cahce with new
+            } else {
+              // sign as cancelled，deal in response
+              storedConfig.canceled = true;
             }
           }
+        }
 
-          // if not has pending request, add to cache
-          if (!hasPendingRequest) {
-            cacheArr.push(storedObj);
-          }
-          return init;
-        },
-      );
+        // if not has pending request, add to cache
+        if (!hasPendingRequest) {
+          cacheArr.push(storedObj);
+        }
+        return init;
+      });
 
       interceptors.response.use((data, { url, init }) => {
         let isReject = false;
@@ -103,7 +96,7 @@ function commonCancelRequest(abortFilter, option) {
             break;
           }
         }
-        if (cacheArr.length > option.gcCacheArrNum) {
+        if (cacheArr.length > assignedOption.gcCacheArrNum) {
           cacheArr = cacheArr.filter(Boolean); // 回收对象
         }
         return isReject ? Promise.reject(`Request: ${url} has been ignored.`) : data;
@@ -113,20 +106,17 @@ function commonCancelRequest(abortFilter, option) {
 }
 
 /**
- * @typedef {import('../../src/interceptors').default} Interceptors
- */
-/**
+ * @typedef {import('../../interceptors').default} Interceptors
+ * ---
  * @typedef CommonThrottleOption
  * @property {string} notInterceptKey
- */
-/**
+ * ---
  * @typedef RequestInfo
  * @property {string} url
  * @property {RequestInit} init
  * @property {number} requestId private param
  * @property {AbortController} [_controller] private param
- */
-/**
+ * ---
  * @callback FilterFunc
  * @param {RequestInfo} currentConfig
  * @param {RequestInfo} storedConfig
@@ -141,10 +131,12 @@ function commonCancelRequest(abortFilter, option) {
  * @return {{install(interceptors:Interceptors):void}}
  */
 function commonThrottleRequest(throttleFilter, option) {
-  const defaultOption = {
-    notInterceptKey: 'notThrottle',
-  };
-  option = Object.assign({}, defaultOption, option);
+  const assignedOption = Object.assign(
+    {
+      notInterceptKey: 'notThrottle',
+    },
+    option,
+  );
   if (!throttleFilter && typeof throttleFilter !== 'function') {
     throttleFilter = (currentConfig, storedConfig) =>
       currentConfig.url === storedConfig.url && currentConfig.init.method === storedConfig.init.method;
@@ -153,8 +145,9 @@ function commonThrottleRequest(throttleFilter, option) {
   return {
     install(interceptors) {
       let requestId = 1;
-      /** @type {RequestInfo[]} 保存*/
+      /** @type {(RequestInfo | null)[]} 保存*/
       let cacheArr = [];
+      /**@type {(init:any) => void} */
       let cacheArr_clean = init => {
         // 请求已返回则移除保存
         for (let i = 0; i < cacheArr.length; i++) {
@@ -169,14 +162,8 @@ function commonThrottleRequest(throttleFilter, option) {
       };
 
       interceptors.request.use(
-        /**
-         * request onFullfilled
-         * @param {string} url
-         * @param {RequestInit} init will pass to fetch
-         * @returns
-         */
         (url, init) => {
-          if (init[option.notInterceptKey]) return init;
+          if (init[assignedOption.notInterceptKey]) return init;
           requestId++;
           const storeObj = { requestId, url, init };
           init._commonThrottleRequest = { requestId };
@@ -190,7 +177,7 @@ function commonThrottleRequest(throttleFilter, option) {
               emptyIndex = i;
               continue;
             }
-            if (throttleFilter({ url, init }, storedConfig)) {
+            if (throttleFilter({ url, init, requestId }, storedConfig)) {
               hasRequestStored = true;
               throw new Error('commonThrottleRequest: The request has been send but not received.Request has been ignore');
             }

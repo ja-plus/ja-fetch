@@ -1,21 +1,76 @@
-import Interceptors from '@/interceptors';
+import Interceptors$3 from '@/interceptors';
+
+interface JaFetchRequestInit extends RequestInit {
+    /**not JSON.stringify(body) */
+    rawBody?: boolean;
+    /**基本url */
+    baseURL?: string;
+    /**url请求参数 */
+    params?: any;
+    responseType?: 'text' | 'blob' | 'arraybuffer' | 'response';
+    body?: any | BodyInit;
+    /**可在init中传任意自定义字段 */
+    [k: string]: any;
+}
+type JaRequestInfo = {
+    url: string;
+    init: JaFetchRequestInit;
+};
+
+type ReqOnFulfilled = (url: string, init: JaFetchRequestInit) => JaFetchRequestInit | Promise<JaFetchRequestInit>;
+type ResOnFulfilled = (data: any, requestInfo: JaRequestInfo, response: Response) => void;
+type ReqOnRejected = (error: any, requestInfo: JaRequestInfo) => Promise<any>;
+type ResOnRejected = (error: any, requestInfo: JaRequestInfo, response: Response) => Promise<any>;
+type Store<T, U> = {
+    id: number;
+    onFulfilled: T;
+    onRejected?: U;
+}[];
+declare class Interceptor<T, U> {
+    /**保存use方法中，传入的拦截方法 */
+    store: Store<T, U>;
+    onFulfilled: T | undefined;
+    onRejected: U | undefined;
+    /**
+     * 添加拦截器方法
+     * @param onFulfilled
+     * @param onRejected
+     * @returns
+     */
+    use(onFulfilled: T, onRejected?: U): number;
+    /**
+     * if !id , remove all Interceptor
+     * @param {number} id
+     */
+    remove(id?: number): void;
+}
+declare class Interceptors$2 {
+    request: Interceptor<ReqOnFulfilled, ReqOnRejected>;
+    response: Interceptor<ResOnFulfilled, ResOnRejected>;
+    create(): Interceptors$2;
+    /**
+     * 拦截器预设,use 另一个拦截器
+     * @param {{install(interceptors:Interceptors)}} obj
+     */
+    use(obj: Interceptors$2 | {
+        install: (interceptors: Interceptors$2) => void;
+    }): void;
+}
 
 /**
- * @typedef {import('../../src/interceptors').default} Interceptors
- */
-/**
+ * @typedef {import('../../interceptors').default} Interceptors
+ * ---
  * @typedef CommonCancelOption
  * @property {string} notInterceptKey
- * @property {number} [gcCacheArrNum=20]
- */
-/**
+ * @property {number} gcCacheArrNum
+ * ---
  * @typedef RequestInfo
  * @property {string} url
  * @property {RequestInit} init
  * @property {number} requestId private param
+ * @property {boolean} [canceled]
  * @property {AbortController} [_controller] private param
- */
-/**
+ * ---
  * @callback FilterFunc
  * @param {RequestInfo} currentConfig
  * @param {RequestInfo} storedConfig
@@ -24,16 +79,23 @@ import Interceptors from '@/interceptors';
 /**
  * 用AbortController 取消之前发起的相同的请求
  * set config.notCancel = true 时则不拦截
- * @param {FilterFunc} [abortFilter] default: url === url, method === method
+ * @param {FilterFunc} abortFilter default: url === url, method === method
  * @param {CommonCancelOption} [option]
  * @return {{install(interceptors:Interceptors):void}}
  */
-declare function commonCancelRequest(abortFilter?: FilterFunc$1 | undefined, option?: CommonCancelOption | undefined): {
-    install(interceptors: any): void;
+declare function commonCancelRequest(abortFilter: FilterFunc$1, option?: CommonCancelOption | undefined): {
+    install(interceptors: Interceptors$1): void;
 };
+/**
+ * ---
+ */
+type Interceptors$1 = Interceptors$2;
 type CommonCancelOption = {
     notInterceptKey: string;
-    gcCacheArrNum?: number | undefined;
+    /**
+     * ---
+     */
+    gcCacheArrNum: number;
 };
 type RequestInfo$1 = {
     url: string;
@@ -42,28 +104,27 @@ type RequestInfo$1 = {
      * private param
      */
     requestId: number;
+    canceled?: boolean | undefined;
     /**
      * private param
+     * ---
      */
     _controller?: AbortController | undefined;
 };
 type FilterFunc$1 = (currentConfig: RequestInfo$1, storedConfig: RequestInfo$1) => boolean;
 
 /**
- * @typedef {import('../../src/interceptors').default} Interceptors
- */
-/**
+ * @typedef {import('../../interceptors').default} Interceptors
+ * ---
  * @typedef CommonThrottleOption
  * @property {string} notInterceptKey
- */
-/**
+ * ---
  * @typedef RequestInfo
  * @property {string} url
  * @property {RequestInit} init
  * @property {number} requestId private param
  * @property {AbortController} [_controller] private param
- */
-/**
+ * ---
  * @callback FilterFunc
  * @param {RequestInfo} currentConfig
  * @param {RequestInfo} storedConfig
@@ -77,9 +138,16 @@ type FilterFunc$1 = (currentConfig: RequestInfo$1, storedConfig: RequestInfo$1) 
  * @return {{install(interceptors:Interceptors):void}}
  */
 declare function commonThrottleRequest(throttleFilter: FilterFunc, option?: CommonThrottleOption | undefined): {
-    install(interceptors: any): void;
+    install(interceptors: Interceptors): void;
 };
+/**
+ * ---
+ */
+type Interceptors = Interceptors$2;
 type CommonThrottleOption = {
+    /**
+     * ---
+     */
     notInterceptKey: string;
 };
 type RequestInfo = {
@@ -91,6 +159,7 @@ type RequestInfo = {
     requestId: number;
     /**
      * private param
+     * ---
      */
     _controller?: AbortController | undefined;
 };
@@ -102,7 +171,7 @@ type Option$1 = {
 };
 /**请求并行队列 */
 declare function commonParallelRequest(option?: Option$1): {
-    install(interceptors: Interceptors): void;
+    install(interceptors: Interceptors$3): void;
 };
 
 type Option = {
@@ -111,7 +180,7 @@ type Option = {
 };
 /**超时 */
 declare function commonTimeoutRequest(option?: Option): {
-    install(interceptors: Interceptors): void;
+    install(interceptors: Interceptors$3): void;
 };
 
 export { commonCancelRequest, commonParallelRequest, commonThrottleRequest, commonTimeoutRequest };

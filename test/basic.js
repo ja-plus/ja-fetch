@@ -5,7 +5,7 @@ let service = http.create({ baseURL: 'http://localhost:8080' });
 service
   .request('/getTestData', {
     method: 'GET',
-    params: { type: 'aa', data: 'ddd' },
+    params: { type: 'aa', data: 'ddd', undef: undefined, nul: null },
     mode: 'cors',
   })
   .then(res => {
