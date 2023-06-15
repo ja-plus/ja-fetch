@@ -19,7 +19,7 @@
 /**
  * 在一个请求发起后未返回时，忽略之后发起的相同请求
  * set config.notThrottle = true 时则不拦截
- * @param {FilterFunc} throttleFilter
+ * @param {FilterFunc} [throttleFilter]
  * @param {CommonThrottleOption} [option]
  * @return {{install(interceptors:Interceptors):void}}
  */
@@ -70,7 +70,7 @@ export default function commonThrottleRequest(throttleFilter, option) {
               emptyIndex = i;
               continue;
             }
-            if (throttleFilter({ url, init, requestId }, storedConfig)) {
+            if (throttleFilter?.({ url, init, requestId }, storedConfig)) {
               hasRequestStored = true;
               throw new Error('commonThrottleRequest: The request has been send but not received.Request has been ignore');
             }

@@ -79,11 +79,11 @@ declare class Interceptors$2 {
 /**
  * 用AbortController 取消之前发起的相同的请求
  * set config.notCancel = true 时则不拦截
- * @param {FilterFunc} abortFilter default: url === url, method === method
+ * @param {FilterFunc} [abortFilter] default: url === url, method === method
  * @param {CommonCancelOption} [option]
  * @return {{install(interceptors:Interceptors):void}}
  */
-declare function commonCancelRequest(abortFilter: FilterFunc$1, option?: CommonCancelOption | undefined): {
+declare function commonCancelRequest(abortFilter?: FilterFunc$1 | undefined, option?: CommonCancelOption | undefined): {
     install(interceptors: Interceptors$1): void;
 };
 /**
@@ -133,11 +133,11 @@ type FilterFunc$1 = (currentConfig: RequestInfo$1, storedConfig: RequestInfo$1) 
 /**
  * 在一个请求发起后未返回时，忽略之后发起的相同请求
  * set config.notThrottle = true 时则不拦截
- * @param {FilterFunc} throttleFilter
+ * @param {FilterFunc} [throttleFilter]
  * @param {CommonThrottleOption} [option]
  * @return {{install(interceptors:Interceptors):void}}
  */
-declare function commonThrottleRequest(throttleFilter: FilterFunc, option?: CommonThrottleOption | undefined): {
+declare function commonThrottleRequest(throttleFilter?: FilterFunc | undefined, option?: CommonThrottleOption | undefined): {
     install(interceptors: Interceptors): void;
 };
 /**

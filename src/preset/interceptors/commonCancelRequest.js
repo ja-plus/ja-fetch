@@ -21,7 +21,7 @@
 /**
  * 用AbortController 取消之前发起的相同的请求
  * set config.notCancel = true 时则不拦截
- * @param {FilterFunc} abortFilter default: url === url, method === method
+ * @param {FilterFunc} [abortFilter] default: url === url, method === method
  * @param {CommonCancelOption} [option]
  * @return {{install(interceptors:Interceptors):void}}
  */
@@ -66,7 +66,7 @@ export default function commonCancelRequest(abortFilter, option) {
         for (let i = 0; i < cacheArr.length; i++) {
           const storedConfig = cacheArr[i];
           if (!storedConfig) continue;
-          if (abortFilter({ url, init, requestId }, storedConfig)) {
+          if (abortFilter?.({ url, init, requestId }, storedConfig)) {
             if (window.AbortController) {
               hasPendingRequest = true; // not push to cache
               storedConfig._controller?.abort(); // abort request

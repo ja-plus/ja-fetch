@@ -1,3 +1,5 @@
+## 1.4.2
+* fix: `commonCancelRequest`,`commonThrottleRequest` param ts hint
 ## 1.4.1
 * change: `get` set param `undefined` will be ignored
 ## 1.4.0

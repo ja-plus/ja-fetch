@@ -21,7 +21,7 @@
 /**
  * 用AbortController 取消之前发起的相同的请求
  * set config.notCancel = true 时则不拦截
- * @param {FilterFunc} abortFilter default: url === url, method === method
+ * @param {FilterFunc} [abortFilter] default: url === url, method === method
  * @param {CommonCancelOption} [option]
  * @return {{install(interceptors:Interceptors):void}}
  */
@@ -66,7 +66,7 @@ function commonCancelRequest(abortFilter, option) {
         for (let i = 0; i < cacheArr.length; i++) {
           const storedConfig = cacheArr[i];
           if (!storedConfig) continue;
-          if (abortFilter({ url, init, requestId }, storedConfig)) {
+          if (abortFilter?.({ url, init, requestId }, storedConfig)) {
             if (window.AbortController) {
               hasPendingRequest = true; // not push to cache
               storedConfig._controller?.abort(); // abort request
@@ -126,7 +126,7 @@ function commonCancelRequest(abortFilter, option) {
 /**
  * 在一个请求发起后未返回时，忽略之后发起的相同请求
  * set config.notThrottle = true 时则不拦截
- * @param {FilterFunc} throttleFilter
+ * @param {FilterFunc} [throttleFilter]
  * @param {CommonThrottleOption} [option]
  * @return {{install(interceptors:Interceptors):void}}
  */
@@ -177,7 +177,7 @@ function commonThrottleRequest(throttleFilter, option) {
               emptyIndex = i;
               continue;
             }
-            if (throttleFilter({ url, init, requestId }, storedConfig)) {
+            if (throttleFilter?.({ url, init, requestId }, storedConfig)) {
               hasRequestStored = true;
               throw new Error('commonThrottleRequest: The request has been send but not received.Request has been ignore');
             }
