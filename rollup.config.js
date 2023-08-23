@@ -7,10 +7,15 @@ export default [
     output: [
       {
         file: 'lib/ja-fetch.js',
+        format: 'cjs',
         sourcemap: true,
       },
       {
-        file: 'lib/ja-fetch.min.js',
+        file: 'lib/ja-fetch.esm.js',
+        sourcemap: true,
+      },
+      {
+        file: 'lib/ja-fetch.esm.min.js',
         sourcemap: true,
         plugins: [terser()],
       },
@@ -21,7 +26,12 @@ export default [
     input: 'src/preset/interceptors/index.ts',
     output: [
       {
+        file: 'preset/interceptors.esm.js',
+        sourcemap: true,
+      },
+      {
         file: 'preset/interceptors.js',
+        format: 'cjs',
         sourcemap: true,
       },
       // {

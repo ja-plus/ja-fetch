@@ -1,4 +1,4 @@
-import type Interceptors from '@/interceptors';
+import Interceptors from '@/interceptors';
 
 type Option = {
   /**parallel size */

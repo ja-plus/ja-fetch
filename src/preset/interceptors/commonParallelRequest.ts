@@ -1,4 +1,4 @@
-import type Interceptors from '@/interceptors';
+import Interceptors from '@/interceptors';
 import type { JaFetchRequestInit } from '@/types';
 
 type TaskCache = { url: string; init: JaFetchRequestInit; resolve: (init: JaFetchRequestInit) => void };
