@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * @typedef {import('../../interceptors').default} Interceptors
  * ---
@@ -275,5 +277,8 @@ function commonTimeoutRequest(option = {}) {
     };
 }
 
-export { commonCancelRequest, commonParallelRequest, commonThrottleRequest, commonTimeoutRequest };
-//# sourceMappingURL=interceptors.esm.js.map
+exports.commonCancelRequest = commonCancelRequest;
+exports.commonParallelRequest = commonParallelRequest;
+exports.commonThrottleRequest = commonThrottleRequest;
+exports.commonTimeoutRequest = commonTimeoutRequest;
+//# sourceMappingURL=interceptors.cjs.map

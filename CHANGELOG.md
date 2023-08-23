@@ -1,3 +1,5 @@
+## 1.5.1
+* fix: preset interceptors cjs
 ## 1.5.0
 * default support commonjs
     * package.json `main` "lib/ja-fetch.min.js" -> "lib/ja-contextmenu.js",

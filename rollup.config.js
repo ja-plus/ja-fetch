@@ -26,12 +26,12 @@ export default [
     input: 'src/preset/interceptors/index.ts',
     output: [
       {
-        file: 'preset/interceptors.esm.js',
+        file: 'preset/interceptors.cjs',
+        format: 'cjs',
         sourcemap: true,
       },
       {
         file: 'preset/interceptors.js',
-        format: 'cjs',
         sourcemap: true,
       },
       // {
