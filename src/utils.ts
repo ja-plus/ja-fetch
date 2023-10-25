@@ -27,11 +27,9 @@ const enum Type {
  * @returns
  */
 export function checkInterceptorsReturn(rejectedFuncReturn: any, type: Type) {
-  if (rejectedFuncReturn instanceof Promise) {
-    return rejectedFuncReturn;
-  } else {
-    // if not Promise, show warn
-    console.warn(`${type === 0 ? 'request' : 'response'}.interceptor.use(onFulfilled, onRejected): onRejected not return Promise.`);
-    return Promise.reject(rejectedFuncReturn);
-  }
+  if (rejectedFuncReturn instanceof Promise) return rejectedFuncReturn;
+
+  // if not Promise, show warn
+  console.warn(`${type === 0 ? 'request' : 'response'}.interceptor.use(onFulfilled, onRejected): onRejected not return Promise.`);
+  return Promise.reject(rejectedFuncReturn);
 }

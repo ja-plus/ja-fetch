@@ -1,7 +1,7 @@
 import Interceptors from '@/interceptors';
 
 type Option = {
-  /**parallel size */
+  /**timeout ms */
   ms?: number;
 };
 /**超时 */

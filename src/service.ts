@@ -26,7 +26,7 @@ export default class Service {
     const resInterceptor = this.interceptors.response;
     let assignedInit = Object.assign({}, this.defaultInit, init);
 
-    if (this.defaultInit.baseURL) url = this.defaultInit.baseURL + url;
+    url = (this.defaultInit.baseURL || '') + url;
 
     // request interceptor
     if (reqInterceptor.store.length) {
