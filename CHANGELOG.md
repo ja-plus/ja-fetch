@@ -2,7 +2,7 @@
 * fix: preset interceptors cjs
 ## 1.5.0
 * default support commonjs
-    * package.json `main` "lib/ja-fetch.min.js" -> "lib/ja-contextmenu.js",
+    * package.json `main` "lib/ja-fetch.min.js" -> "lib/ja-fetch.js",
     * package.json `module` "lib/ja-fetch.esm.js"
 ## 1.4.2
 * fix: `commonCancelRequest`,`commonThrottleRequest` param ts hint
