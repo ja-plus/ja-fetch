@@ -1,5 +1,5 @@
 // multi interceptors
-import http from '../lib/ja-fetch.js';
+import http from '../lib/ja-fetch.esm.js';
 import h from './h.js';
 const Service = http.create();
 

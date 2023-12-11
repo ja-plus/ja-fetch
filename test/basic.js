@@ -1,5 +1,5 @@
 /* -------basic request---------------*/
-import http from '../lib/ja-fetch.js';
+import http from '../lib/ja-fetch.esm.js';
 import h from './h.js';
 let service = http.create({ baseURL: 'http://localhost:8080' });
 service

@@ -1,4 +1,4 @@
-import http from '../lib/ja-fetch.js';
+import http from '../lib/ja-fetch.esm.js';
 import h from './h.js';
 /**@type {HTMLElement}*/
 let uploadFileBtn = h('button', 'uploadFile');

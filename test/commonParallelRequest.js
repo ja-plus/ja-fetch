@@ -1,4 +1,4 @@
-import http from '../lib/ja-fetch.js';
+import http from '../lib/ja-fetch.esm.js';
 import { commonParallelRequest } from '../preset/interceptors.js';
 import h from './h.js';
 let serviceParallel = http.create();

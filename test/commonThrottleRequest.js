@@ -1,5 +1,5 @@
 /* test interceptor throttle */
-import http from '../lib/ja-fetch.js';
+import http from '../lib/ja-fetch.esm.js';
 import { commonThrottleRequest } from '../preset/interceptors.js';
 import h from './h.js';
 let ServiceAB = http.create();

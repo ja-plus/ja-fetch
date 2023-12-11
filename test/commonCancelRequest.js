@@ -1,5 +1,5 @@
 /* test interceptor commonCancelRequest*/
-import http from '../lib/ja-fetch.js';
+import http from '../lib/ja-fetch.esm.js';
 import { commonCancelRequest } from '../preset/interceptors.js';
 import h from './h.js';
 let ServiceAB = http.create();
