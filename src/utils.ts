@@ -9,7 +9,7 @@ export function createUrlParamStr(url: string, params: any) {
   for (const key in params) {
     if (Object.hasOwnProperty.call(params, key)) {
       const val = params[key];
-      if (val === undefined || val === null) continue;
+      if (val === void 0 || val === null) continue;
       tmpUrl.searchParams.append(key, val);
     }
   }

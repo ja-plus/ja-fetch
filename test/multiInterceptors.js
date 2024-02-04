@@ -66,6 +66,6 @@ Service.get('http://localhost:8080/getTestData', {
     document.body.append(h('p', 'multi interceptor GET: ok,' + JSON.stringify(res)));
   })
   .catch(err => {
-    console.error('multi interceptor get: err', err);
+    console.warn('multi interceptor get: err', err);
     document.body.append(h('p', 'multi interceptor GET: err,' + JSON.stringify(err)));
   });
