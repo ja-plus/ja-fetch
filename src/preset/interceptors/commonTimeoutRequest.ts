@@ -16,8 +16,9 @@ export default function commonTimeoutRequest(option: Option = {}) {
         const _commonTimeoutRequest = {
           controller: abortController,
           timeout: window.setTimeout(() => {
-            abortController.abort();
-            console.warn(`commonTimeoutRequest: timeout(${ms}). url:${url}, init:`, init);
+            const msg = `commonTimeoutRequest: timeout(${ms}). url:${url}`;
+            abortController.abort(msg);
+            console.warn(msg);
           }, ms),
         };
         init._commonTimeoutRequest = _commonTimeoutRequest;

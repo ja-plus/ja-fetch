@@ -1,3 +1,6 @@
+## 1.5.2
+* fix: `AbortController.abort` add `AbortController.reason` 
+
 ## 1.5.1
 * fix: preset interceptors cjs
 ## 1.5.0

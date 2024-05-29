@@ -71,7 +71,7 @@ function commonCancelRequest(abortFilter, option) {
           if (abortFilter?.({ url, init, requestId }, storedConfig)) {
             if (window.AbortController) {
               hasPendingRequest = true; // not push to cache
-              storedConfig._controller?.abort(); // abort request
+              storedConfig._controller?.abort(`commonCancelRequest: cancel a request(${storedConfig.url})`); // abort request
               cacheArr[i] = storedObj; // replace old cahce with new
             } else {
               // sign as cancelled，deal in response
@@ -259,8 +259,9 @@ function commonTimeoutRequest(option = {}) {
                 const _commonTimeoutRequest = {
                     controller: abortController,
                     timeout: window.setTimeout(() => {
-                        abortController.abort();
-                        console.warn(`commonTimeoutRequest: timeout(${ms}). url:${url}, init:`, init);
+                        const msg = `commonTimeoutRequest: timeout(${ms}). url:${url}`;
+                        abortController.abort(msg);
+                        console.warn(msg);
                     }, ms),
                 };
                 init._commonTimeoutRequest = _commonTimeoutRequest;
