@@ -1,4 +1,5 @@
 import type { JaFetchRequestInit, JaRequestInfo } from './types';
+import { isFn } from './utils';
 
 type ReqOnFulfilled = (url: string, init: JaFetchRequestInit) => JaFetchRequestInit | Promise<JaFetchRequestInit>;
 type ResOnFulfilled = (data: any, requestInfo: JaRequestInfo, response: Response) => void;
@@ -18,12 +19,13 @@ class Interceptor<T, U> {
    * @returns
    */
   use(onFulfilled: T, onRejected?: U): number {
-    if (onFulfilled && typeof onFulfilled !== 'function') {
-      throw new TypeError('interceptor.use(onFulfilled, onRejected), parameter onFulfilled is not a function');
-    }
-    if (onRejected && typeof onRejected !== 'function') {
-      throw new TypeError('interceptor.use(onFulfilled, onRejected), parameter onRejected is not a function');
-    }
+    const checkParamValid = (v: any) => {
+      if (v && !isFn(v)) {
+        throw new TypeError('interceptor.use(onFulfilled, onRejected), onFulfilled is not a function');
+      }
+    };
+    checkParamValid(onFulfilled);
+    checkParamValid(onRejected);
     this.onFulfilled = onFulfilled;
     this.onRejected = onRejected;
 
@@ -57,7 +59,7 @@ export default class Interceptors {
    * @param {{install(interceptors:Interceptors)}} obj
    */
   use(obj: Interceptors | { install: (interceptors: Interceptors) => void }) {
-    let interceptors;
+    let interceptors: Interceptors;
     if (obj instanceof Interceptors) {
       interceptors = obj;
     } else {

@@ -1,7 +1,7 @@
 import coreFetch from './coreFetch';
 import Interceptors from './interceptors';
 import type { JaFetchRequestInit, JaRequestInfo } from './types';
-import { checkInterceptorsReturn } from './utils';
+import { checkInterceptorsRejectCallbackReturn } from './utils';
 
 export default class Service {
   defaultInit: JaFetchRequestInit = {
@@ -10,7 +10,7 @@ export default class Service {
   interceptors = new Interceptors();
 
   constructor(defaultInit?: JaFetchRequestInit) {
-    this.defaultInit = Object.assign(this.defaultInit, defaultInit);
+    this.defaultInit = { ...this.defaultInit, ...defaultInit };
   }
   /** create a new service */
   create(init?: JaFetchRequestInit) {
@@ -22,44 +22,45 @@ export default class Service {
    * @param {JaFetchRequestInit} init
    */
   private async requestAdapter(url: string, init: JaFetchRequestInit) {
-    const reqInterceptor = this.interceptors.request;
-    const resInterceptor = this.interceptors.response;
-    let assignedInit = Object.assign({}, this.defaultInit, init);
+    const {
+      request: { store: reqStore = [] },
+      response: { store: resStore = [] },
+    } = this.interceptors;
 
-    url = (this.defaultInit.baseURL || '') + url;
+    init = { ...this.defaultInit, ...init };
 
     // request interceptor
-    if (reqInterceptor.store.length) {
-      if (!assignedInit.headers) assignedInit.headers = {}; //便于 init.headers.xxx
-      for (const item of reqInterceptor.store) {
-        assignedInit = await item.onFulfilled(url, assignedInit);
-      }
+    for (const item of reqStore) {
+      const r = await item.onFulfilled(url, init);
+      if (r) init = r;
     }
 
-    const requestInfo: JaRequestInfo = { url, init: assignedInit };
+    url = (init.baseURL || '') + url;
 
-    return coreFetch(url, assignedInit).then(
+    const requestInfo: JaRequestInfo = { url, init };
+
+    return coreFetch(url, init).then(
       response => {
+        const callbackParam = [requestInfo, response] as const;
+
         if (response.ok) {
-          const { responseType } = assignedInit;
-          let prom: Promise<any>;
-          if (responseType === 'blob') prom = response.blob();
-          else if (responseType === 'text') prom = response.text();
-          else if (responseType === 'arraybuffer') prom = response.arrayBuffer();
-          else if (responseType === 'response') prom = Promise.resolve(response);
-          else prom = response.json();
+          let { responseType } = init;
+          if (!responseType) responseType = 'json';
+
+          let prom: Promise<any> = Promise.resolve(response);
+          // set default response type to json
+          if (responseType !== 'response') {
+            prom = response[responseType]();
+          }
 
           /**
            * response interceptor
            * 第一个拦截器中onFulfilled中的异常由下一个拦截器的onRejected处理
            */
-          resInterceptor.store.forEach(item => {
+          resStore.forEach(({ onFulfilled, onRejected }) => {
             prom = prom.then(
-              data => item.onFulfilled(data, requestInfo, response),
-              err =>
-                item.onRejected
-                  ? item.onRejected(err, requestInfo, response).then((res: any) => checkInterceptorsReturn(res, 1))
-                  : Promise.reject(err),
+              data => onFulfilled(data, ...callbackParam),
+              onRejected && (err => onRejected(err, ...callbackParam).then(checkInterceptorsRejectCallbackReturn)),
             );
           });
 
@@ -67,10 +68,12 @@ export default class Service {
         } else {
           // ------------ response interceptor
           let resInterceptorRejectPromise: Promise<any> = Promise.reject(response);
-          resInterceptor.store.forEach(item => {
-            resInterceptorRejectPromise = resInterceptorRejectPromise
-              .catch(err => (item.onRejected ? item.onRejected(err, requestInfo, response) : Promise.reject(err)))
-              .then(res => checkInterceptorsReturn(res, 1));
+          resStore.forEach(({ onRejected }) => {
+            if (onRejected) {
+              resInterceptorRejectPromise = resInterceptorRejectPromise
+                .catch(err => onRejected(err, ...callbackParam))
+                .then(checkInterceptorsRejectCallbackReturn);
+            }
           });
           return resInterceptorRejectPromise;
         }
@@ -78,10 +81,12 @@ export default class Service {
       err => {
         // ------------ request interceptor (浏览器阻止请求)
         let reqInterceptorRejectPromise: Promise<any> = Promise.reject(err);
-        reqInterceptor.store.forEach(item => {
-          reqInterceptorRejectPromise = reqInterceptorRejectPromise
-            .catch(err => (item.onRejected ? item.onRejected(err, requestInfo) : Promise.reject(err)))
-            .then(res => checkInterceptorsReturn(res, 0));
+        reqStore.forEach(({ onRejected }) => {
+          if (onRejected) {
+            reqInterceptorRejectPromise = reqInterceptorRejectPromise
+              .catch(err => onRejected(err, requestInfo))
+              .then(checkInterceptorsRejectCallbackReturn);
+          }
         });
         return reqInterceptorRejectPromise;
       },
@@ -93,18 +98,18 @@ export default class Service {
   }
   get<T>(url: string, init: JaFetchRequestInit = {}): Promise<T> {
     init.method = 'GET';
-    return this.requestAdapter(url, init);
+    return this.request<T>(url, init);
   }
   post<T>(url: string, init: JaFetchRequestInit = {}): Promise<T> {
     init.method = 'POST';
-    return this.requestAdapter(url, init);
+    return this.request<T>(url, init);
   }
   put<T>(url: string, init: JaFetchRequestInit = {}): Promise<T> {
     init.method = 'PUT';
-    return this.requestAdapter(url, init);
+    return this.request<T>(url, init);
   }
   del<T>(url: string, init: JaFetchRequestInit = {}): Promise<T> {
     init.method = 'DELETE';
-    return this.requestAdapter(url, init);
+    return this.request<T>(url, init);
   }
 }

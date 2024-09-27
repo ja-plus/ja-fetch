@@ -1,6 +1,6 @@
 {
   "name": "ja-fetch",
-  "version": "1.5.2",
+  "version": "1.6.0",
   "description": "4kb fetch-api wrapper",
   "main": "lib/ja-fetch.js",
   "module": "lib/ja-fetch.esm.js",

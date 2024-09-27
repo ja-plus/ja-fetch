@@ -16,20 +16,17 @@ export function createUrlParamStr(url: string, params: any) {
   return tmpUrl.href;
 }
 
-const enum Type {
-  request = 0,
-  response = 1,
-}
 /**
  * check interceptors onRejected function's return
  * @param {any} rejectedFuncReturn
  * @param {Type} type
  * @returns
  */
-export function checkInterceptorsReturn(rejectedFuncReturn: any, type: Type) {
-  if (rejectedFuncReturn instanceof Promise) return rejectedFuncReturn;
+export function checkInterceptorsRejectCallbackReturn(rejectedFuncReturn: any) {
+  return rejectedFuncReturn instanceof Promise ? rejectedFuncReturn : Promise.reject(rejectedFuncReturn);
+}
 
-  // if not Promise, show warn
-  console.warn(`${type === 0 ? 'request' : 'response'}.interceptor.use(onFulfilled, onRejected): onRejected not return Promise.`);
-  return Promise.reject(rejectedFuncReturn);
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function isFn(fn: unknown): fn is Function {
+  return typeof fn === 'function';
 }
