@@ -1,5 +1,5 @@
 ## 1.6.0
-* optimize: code size
+* optimize: rewrite some code to reduce code size
 
 ## 1.5.2
 * fix: `AbortController.abort` add `AbortController.reason` 
