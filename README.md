@@ -1,5 +1,5 @@
 # ja-fetch
-A simple fetch wrapper, refer to some `axios API`. (parsed:**5KB**)
+A simple fetch wrapper, refer to some `axios API`. (parsed:**4KB**)
 * Optimize fetch: method `"get"`, set `params` to transfer parameters.
 * Optimize fetch: Auto JSON.stringify `post` body.
 * default return `response.json()`. (Set `responseType` to change)
@@ -35,7 +35,7 @@ http.get(url, {
     params: { type: "aa", data: "ddd" },
     mode: "cors",
     // credentials: 'include',
-    // responseType: 'text' | 'arraybuffer' | 'blob' | 'json' 
+    // responseType: 'text' | 'arrayBuffer' | 'blob' | 'json' | 'formData'
     // responseType: 'response' // return raw fetch Response Object
 })
 // post
@@ -70,7 +70,7 @@ const service = http.create({
   baseURL: 'http://xxx.cn',
   // rawBody: true, // Not auto JSON.stringify(body)
   // credentials: 'include' // cookie
-  // responseType: 'text' | 'arraybuffer' | 'blob' | 'json' | 'response'
+  // responseType:  'response' | 'text' | 'arrayBuffer' | 'blob' | 'json' | 'formData'
 });
 service.interceptors.request.use(
     (url, init) => {
