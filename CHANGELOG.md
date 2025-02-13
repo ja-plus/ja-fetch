@@ -1,3 +1,6 @@
+## 1.6.1
+* fix: `commonCancelRequest` and `commonTimeRequest`, which create AbortController will cover user's signal. Now users signal first.
+* feature: `commonCancelRequest` and `commonTimeRequest`, support `AbortSignal.any` to receive several abort event.
 ## 1.6.0
 * optimize: rewrite some code to reduce code size
 

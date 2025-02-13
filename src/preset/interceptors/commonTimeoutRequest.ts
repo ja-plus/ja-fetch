@@ -11,8 +11,16 @@ export default function commonTimeoutRequest(option: Option = {}) {
   return {
     install(interceptors: Interceptors) {
       interceptors.request.use((url, init) => {
-        const abortController = new AbortController();
-        init.signal = abortController.signal;
+        const abortController = init.abortController || new AbortController();
+        if (init.signal) {
+          // if user has set signal, use user's signal
+          // chrome 116 can use AbortSignal.any
+          if (AbortSignal.any) {
+            init.signal = AbortSignal.any([init.signal, abortController.signal]);
+          }
+        } else {
+          init.signal = abortController.signal;
+        }
         const _commonTimeoutRequest = {
           controller: abortController,
           timeout: window.setTimeout(() => {

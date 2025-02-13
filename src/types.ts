@@ -13,6 +13,8 @@ export interface JaFetchRequestInit<T = ResponseType> extends RequestInit {
    */
   responseType?: T;
   body?: any | BodyInit;
+  /** if set, the preset interceptors will use this abortController first*/
+  abortController?: AbortController;
   /** custom */
   [k: string]: any;
 }
