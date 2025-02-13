@@ -1,5 +1,8 @@
 # ja-fetch
 A simple fetch wrapper, refer to some `axios API`. (parsed:**4KB**)
+
+- [Gitee](https://gitee.com/japlus/ja-fetch)
+
 * Optimize fetch: method `"get"`, set `params` to transfer parameters.
 * Optimize fetch: Auto JSON.stringify `post` body.
 * default return `response.json()`. (Set `responseType` to change)
